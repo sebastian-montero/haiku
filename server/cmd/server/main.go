@@ -7,6 +7,8 @@ import (
 	psql "wip/internal/conn"
 	initalizer "wip/internal/init"
 	"wip/internal/utils"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -16,9 +18,16 @@ func main() {
 	var db *sql.DB = psql.DBManager(config)
 
 	userHandler := initalizer.InitUser(db)
-	http.HandleFunc("/users", userHandler.CreateUser)
+
+
+	r := mux.NewRouter()
+	r.HandleFunc("/users", userHandler.CreateUser).Methods("POST")
+	r.HandleFunc("/users", userHandler.UpdateUser).Methods("PUT")
+	r.HandleFunc("/users/{id}", userHandler.GetUserByID).Methods("GET")
+	r.HandleFunc("/users/{id}", userHandler.DeleteUserByID).Methods("DELETE")
+	
 
 	log.Print("Server started on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", r))
 	defer db.Close()
 }
