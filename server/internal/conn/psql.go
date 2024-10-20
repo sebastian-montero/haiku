@@ -46,5 +46,5 @@ func createTables(db *sql.DB, query string) {
 		panic(err)
 	}
 
-	logger.Info("Table created...")
+	logger.Info("Executed query OK...")
 }

@@ -8,21 +8,41 @@ db_conn:
   dbname: "db"
 
 db_tables:
+  # USERS TABLE
   - CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
       username VARCHAR(100) UNIQUE NOT NULL,
       email VARCHAR(100) UNIQUE NOT NULL,
       password VARCHAR(100) NOT NULL
-      );
-  - CREATE TABLE IF NOT EXISTS users2 (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(100) UNIQUE NOT NULL,
-      email VARCHAR(100) UNIQUE NOT NULL,
-      password VARCHAR(100) NOT NULL
     );
-  - CREATE TABLE IF NOT EXISTS users3 (
+
+  # NOTEBOOKS TABLE
+  - CREATE TABLE IF NOT EXISTS notebooks (
       id SERIAL PRIMARY KEY,
-      username VARCHAR(100) UNIQUE NOT NULL,
-      email VARCHAR(100) UNIQUE NOT NULL,
-      password VARCHAR(100) NOT NULL
+      title VARCHAR(255) NOT NULL,
+      owner_id INT REFERENCES users(id),
+      latest_content TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      last_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+
+  # SESSIONS TABLE
+  - CREATE TABLE IF NOT EXISTS sessions (
+      id SERIAL PRIMARY KEY,
+      notebook_id INT REFERENCES notebooks(id),
+      owner_id INT REFERENCES users(id),
+      is_active BOOLEAN DEFAULT TRUE,
+      started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      ended_at TIMESTAMP
+    );
+
+  # SESSION DATA TABLE
+  - CREATE TABLE IF NOT EXISTS session_data (
+      id SERIAL PRIMARY KEY,
+      session_id INT REFERENCES sessions(id),
+      user_id INT REFERENCES users(id),
+      content TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+
