@@ -2,9 +2,11 @@ package http_handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"wip/internal/models"
 	"wip/internal/services"
+	"wip/internal/utils/logger"
 
 	"github.com/gorilla/mux"
 )
@@ -17,12 +19,13 @@ func (h *NotebookHTTPHandler) CreateNotebook(w http.ResponseWriter, r *http.Requ
 	var notebook models.Notebook
 
 	if err := json.NewDecoder(r.Body).Decode(&notebook); err != nil {
+		logger.Error(fmt.Sprintf("Failed to decode request body: %v", err))
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	if err := h.Service.CreateNotebook(&notebook); err != nil {
-		http.Error(w, "Failed to register notebook", http.StatusInternalServerError)
+		http.Error(w, "Failed to create notebook", http.StatusInternalServerError)
 		return
 	}
 
@@ -34,20 +37,25 @@ func (h *NotebookHTTPHandler) GetNotebookByID(w http.ResponseWriter, r *http.Req
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	var notebook models.Notebook = h.Service.GetNotebookByID(id)
+	notebook, err := h.Service.GetNotebookByID(id)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to get notebook: %v", err))
+		http.Error(w, "Failed to get notebook", http.StatusInternalServerError)
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(notebook)
 }
 
-func (h *NotebookHTTPHandler) DeleteUserByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
+// func (h *NotebookHTTPHandler) DeleteUserByID(w http.ResponseWriter, r *http.Request) {
+// 	vars := mux.Vars(r)
+// 	id := vars["id"]
 
-	h.Service.DeleteUserByID(id)
+// 	h.Service.DeleteUserByID(id)
 
-	w.WriteHeader(http.StatusNoContent)
-}
+// 	w.WriteHeader(http.StatusNoContent)
+// }
 
 // func (h *NotebookHTTPHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 

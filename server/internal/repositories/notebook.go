@@ -19,21 +19,15 @@ func (repo *NotebookRepository) CreateNotebook(notebook *models.Notebook) error 
 
 	query := `INSERT INTO notebooks (title, owner_id, latest_content, created_at, last_updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`
 	err := repo.DB.QueryRow(query, notebook.Title, notebook.OwnerID, notebook.LatestContent, notebook.CreatedAt, notebook.LastUpdatedAt).Scan(&notebook.ID)
-	if err != nil {
-		panic(err)
-	}
-	return nil
+	return err
 }
 
-func (repo *NotebookRepository) GetNotebookByID(id string) models.Notebook {
+func (repo *NotebookRepository) GetNotebookByID(id string) (models.Notebook, error){
 	query := `SELECT * FROM notebooks WHERE id = $1`
 
 	var notebook models.Notebook
 	err := repo.DB.QueryRow(query, id).Scan(&notebook.ID, &notebook.Title, &notebook.OwnerID, &notebook.LatestContent, &notebook.CreatedAt, &notebook.LastUpdatedAt)
-	if err != nil {
-		panic(err)
-	}
-	return notebook
+	return notebook, err
 }
 
 // func (repo *NotebookRepository) DeleteUserByID(id string) {

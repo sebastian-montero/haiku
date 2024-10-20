@@ -10,11 +10,10 @@ type NotebookService struct {
 }
 
 func (s *NotebookService) CreateNotebook(notebook *models.Notebook) error {
-	s.Repository.CreateNotebook(notebook)
-	return nil
+	return s.Repository.CreateNotebook(notebook)
 }
 
-func (s *NotebookService) GetNotebookByID(id string) models.Notebook {
+func (s *NotebookService) GetNotebookByID(id string) (models.Notebook, error) {
 	return s.Repository.GetNotebookByID(id)
 }
 
