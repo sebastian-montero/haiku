@@ -19,6 +19,10 @@ query:
 	@echo "Running query..."
 	curl -X POST http://localhost:8080/users -d '{"username": "john_doe2", "email": "john3@example.com", "password": "password123"}' -H "Content-Type: application/json"
 
+query-nbs:
+	@echo "Running query..."
+	curl -X POST http://localhost:8080/notebooks -d '{"title": "test", "owner_id": 2}' -H "Content-Type: application/json"
+
 query-get:
 	@echo "Running query..."
 	curl -X GET http://localhost:8080/users/12

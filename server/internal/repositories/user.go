@@ -3,7 +3,6 @@ package repositories
 import (
 	"database/sql"
 	"wip/internal/models"
-	"wip/internal/utils/logger"
 )
 
 type UserRepository struct {
@@ -44,9 +43,4 @@ func (repo *UserRepository) UpdateUser(user *models.User) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func UserRepositoryManager(db *sql.DB) *UserRepository {
-	logger.Info("Creating user repository...")
-	return &UserRepository{DB: db}
 }
