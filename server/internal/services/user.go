@@ -1,6 +1,7 @@
 package services
 
 import (
+	"strconv"
 	"wip/internal/models"
 	"wip/internal/repositories"
 )
@@ -23,5 +24,6 @@ func (s *UserService) DeleteUserByID(id string) {
 }
 
 func (s *UserService) UpdateUser(user *models.User) {
+	var _ models.User = s.Repository.GetUserByID(strconv.Itoa(user.ID))
 	s.Repository.UpdateUser(user)
 }

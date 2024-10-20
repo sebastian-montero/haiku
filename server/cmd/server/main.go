@@ -28,8 +28,8 @@ func main() {
 
 	r.HandleFunc("/notebooks", notebookHandler.CreateNotebook).Methods("POST")
 	// r.HandleFunc("/notebooks", userHandler.UpdateUser).Methods("PUT")
-	// r.HandleFunc("/notebooks/{id}", userHandler.GetUserByID).Methods("GET")
-	// r.HandleFunc("/notebooks/{id}", userHandler.DeleteUserByID).Methods("DELETE")
+	r.HandleFunc("/notebooks/{id}", notebookHandler.GetNotebookByID).Methods("GET")
+	// r.HandleFunc("/notebooks/{id}", userHandler.DeleteNotebookByID).Methods("DELETE")
 
 	log.Print("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", withCORS(r)))

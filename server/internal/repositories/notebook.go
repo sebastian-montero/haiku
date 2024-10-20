@@ -25,16 +25,16 @@ func (repo *NotebookRepository) CreateNotebook(notebook *models.Notebook) error 
 	return nil
 }
 
-// func (repo *NotebookRepository) GetUserByID(id string) models.User {
-// 	query := `SELECT * FROM users WHERE id = $1`
+func (repo *NotebookRepository) GetNotebookByID(id string) models.Notebook {
+	query := `SELECT * FROM notebooks WHERE id = $1`
 
-// 	var user models.User
-// 	err := repo.DB.QueryRow(query, id).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	return user
-// }
+	var notebook models.Notebook
+	err := repo.DB.QueryRow(query, id).Scan(&notebook.ID, &notebook.Title, &notebook.OwnerID, &notebook.LatestContent, &notebook.CreatedAt, &notebook.LastUpdatedAt)
+	if err != nil {
+		panic(err)
+	}
+	return notebook
+}
 
 // func (repo *NotebookRepository) DeleteUserByID(id string) {
 // 	query := `DELETE FROM users WHERE id = $1`

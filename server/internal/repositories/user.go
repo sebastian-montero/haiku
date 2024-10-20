@@ -15,7 +15,7 @@ func (repo *UserRepository) CreateUser(user *models.User) error {
 	if err != nil {
 		panic(err)
 	}
-	return nil
+	return err
 }
 
 func (repo *UserRepository) GetUserByID(id string) models.User {

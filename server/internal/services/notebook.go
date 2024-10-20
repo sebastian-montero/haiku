@@ -14,9 +14,9 @@ func (s *NotebookService) CreateNotebook(notebook *models.Notebook) error {
 	return nil
 }
 
-// func (s *NotebookService) GetUserByID(id string) models.User {
-// 	return s.Repository.GetUserByID(id)
-// }
+func (s *NotebookService) GetNotebookByID(id string) models.Notebook {
+	return s.Repository.GetNotebookByID(id)
+}
 
 // func (s *NotebookService) DeleteUserByID(id string) {
 // 	s.Repository.DeleteUserByID(id)
