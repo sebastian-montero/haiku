@@ -17,9 +17,13 @@ func (s *NotebookService) GetNotebookByID(id string) (models.Notebook, error) {
 	return s.Repository.GetNotebookByID(id)
 }
 
-// func (s *NotebookService) DeleteUserByID(id string) {
-// 	s.Repository.DeleteUserByID(id)
-// }
+func (s *NotebookService) DeleteNotebookByID(id string) error {
+	_, err := s.Repository.GetNotebookByID(id)
+	if err != nil {
+		return err
+	}
+	return s.Repository.DeleteNotebookByID(id)
+}
 
 // func (s *NotebookService) UpdateUser(user *models.User) {
 // 	s.Repository.UpdateUser(user)

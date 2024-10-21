@@ -25,6 +25,7 @@ func (h *NotebookHTTPHandler) CreateNotebook(w http.ResponseWriter, r *http.Requ
 	}
 
 	if err := h.Service.CreateNotebook(&notebook); err != nil {
+		logger.Error(fmt.Sprintf("Failed to create notebook: %v", err))
 		http.Error(w, "Failed to create notebook", http.StatusInternalServerError)
 		return
 	}
@@ -48,14 +49,19 @@ func (h *NotebookHTTPHandler) GetNotebookByID(w http.ResponseWriter, r *http.Req
 	json.NewEncoder(w).Encode(notebook)
 }
 
-// func (h *NotebookHTTPHandler) DeleteUserByID(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id := vars["id"]
+func (h *NotebookHTTPHandler) DeleteNotebookByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
 
-// 	h.Service.DeleteUserByID(id)
+	err := h.Service.DeleteNotebookByID(id)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to delete notebook: %v", err))
+		http.Error(w, "Failed to delete notebook", http.StatusInternalServerError)
+		return
+	}
 
-// 	w.WriteHeader(http.StatusNoContent)
-// }
+	w.WriteHeader(http.StatusNoContent)
+}
 
 // func (h *NotebookHTTPHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 

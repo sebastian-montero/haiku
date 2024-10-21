@@ -30,13 +30,11 @@ func (repo *NotebookRepository) GetNotebookByID(id string) (models.Notebook, err
 	return notebook, err
 }
 
-// func (repo *NotebookRepository) DeleteUserByID(id string) {
-// 	query := `DELETE FROM users WHERE id = $1`
-// 	_, err := repo.DB.Exec(query, id)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
+func (repo *NotebookRepository) DeleteNotebookByID(id string) error {
+	query := `DELETE FROM notebooks WHERE id = $1`
+	_, err := repo.DB.Exec(query, id)
+	return err
+}
 
 // func (repo *NotebookRepository) UpdateUser(user *models.User) {
 // 	query := `UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4`

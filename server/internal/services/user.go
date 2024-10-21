@@ -19,6 +19,10 @@ func (s *UserService) GetUserByID(id string) (models.User, error) {
 }
 
 func (s *UserService) DeleteUserByID(id string) error {
+	_, err := s.Repository.GetUserByID(id)
+	if err != nil {
+		return err
+	}
 	return s.Repository.DeleteUserByID(id)
 }
 
