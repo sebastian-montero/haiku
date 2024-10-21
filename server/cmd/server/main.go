@@ -1,21 +1,24 @@
+// Description: This is the main file for the server. It initializes the server and the handlers for the routes.
 package main
 
 import (
 	"database/sql"
 	"log"
 	"net/http"
-	psql "wip/internal/conn"
-	initalizer "wip/internal/init"
-	"wip/internal/utils"
+	psql "wout/internal/conn"
+	initalizer "wout/internal/init"
+	"wout/internal/utils"
 
 	"github.com/gorilla/mux"
 )
 
+// main function initializes the server and the handlers for the routes.
+// It also initializes the database connection.
+// It also sets up the CORS headers for the server.
 func main() {
-	cfg_path := "./cfg/dev.yaml"
-	config := utils.LoadConfig(cfg_path)
+	var config utils.Config = utils.LoadConfig("./cfg/dev.yaml")
 
-	var db *sql.DB = psql.DBManager(config)
+	var db *sql.DB = psql.DBManager(&config)
 
 	userHandler := initalizer.InitUser(db)
 	notebookHandler := initalizer.InitNotebook(db)
@@ -36,11 +39,14 @@ func main() {
 	defer db.Close()
 }
 
+// withCORS function sets up the CORS headers for the server.
+// It allows requests from the localhost.
+// It also sets up the allowed methods and headers for the server.
 func withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST")
-		w.Header().Set("Access-Control-Allow-Headers", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"wip/internal/models"
-	"wip/internal/services"
-	"wip/internal/utils/logger"
+	"wout/internal/models"
+	"wout/internal/services"
+	"wout/internal/utils/logger"
 
 	"github.com/gorilla/mux"
 )

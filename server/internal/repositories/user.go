@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"database/sql"
-	"wip/internal/models"
+	"wout/internal/models"
 )
 
 type UserRepository struct {

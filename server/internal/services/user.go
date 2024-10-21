@@ -2,8 +2,8 @@ package services
 
 import (
 	"strconv"
-	"wip/internal/models"
-	"wip/internal/repositories"
+	"wout/internal/models"
+	"wout/internal/repositories"
 )
 
 type UserService struct {

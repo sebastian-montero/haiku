@@ -1,16 +1,25 @@
 
 fmt:
-	@echo "Applying format..."
+	@echo ">>> Applying format..."
 	gofmt -w .
 
-run:
-	@echo "Running server..."
+run: fmt
+	@echo ">>> Running server..."
 	go run cmd/server/main.go
 
-build: fmt
-	@echo "Building server..."
+build: fmt build-docs
+	@echo ">>> Building server..."
 	go build -o bin/server cmd/server/main.go
 
+build-docs: 
+	@echo ">>> Generating docs..."
+	GO111MODULE=on
+	godoc -write_index -index_files=./docs/index.idx
+
+run-docs:
+	@echo ">>> Running docs..."
+	godoc -http=:6060 -index_files=./docs/index.idx
+
 docker-up:
-	@echo "Starting docker compose..."
+	@echo ">>> Starting docker compose..."
 	docker compose up -d

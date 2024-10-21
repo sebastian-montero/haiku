@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"wip/internal/models"
-	"wip/internal/services"
-	"wip/internal/utils/logger"
+	"wout/internal/models"
+	"wout/internal/services"
+	"wout/internal/utils/logger"
 
 	"github.com/gorilla/mux"
 )
@@ -40,7 +40,7 @@ func (h *UserHTTPHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.Service.GetUserByID(id)
 	if err != nil {
-		logger.Error(fmt.Sprintf("Failed to get user: %v", err))	
+		logger.Error(fmt.Sprintf("Failed to get user: %v", err))
 		http.Error(w, "Failed to get user", http.StatusInternalServerError)
 		return
 	}
@@ -75,7 +75,7 @@ func (h *UserHTTPHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Service.UpdateUser(&user)
 	if err != nil {
-		logger.Error(fmt.Sprintf("Failed to update user: %v", err	))
+		logger.Error(fmt.Sprintf("Failed to update user: %v", err))
 		http.Error(w, "Failed to update user", http.StatusInternalServerError)
 		return
 	}

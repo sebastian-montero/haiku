@@ -1,8 +1,8 @@
 package services
 
 import (
-	"wip/internal/models"
-	"wip/internal/repositories"
+	"wout/internal/models"
+	"wout/internal/repositories"
 )
 
 type NotebookService struct {

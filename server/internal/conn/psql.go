@@ -3,16 +3,16 @@ package psql
 import (
 	"database/sql"
 	"fmt"
-	utilities "wip/internal/utils"
-	"wip/internal/utils/logger"
+	utilities "wout/internal/utils"
+	"wout/internal/utils/logger"
 
 	_ "github.com/lib/pq"
 )
 
-func DBManager(config utilities.Config) *sql.DB {
+func DBManager(cfg *utilities.Config) *sql.DB {
 	logger.Info("Creating db conn...")
 
-	dbConn := config.DBConn
+	dbConn := cfg.DBConn
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		dbConn.Host,
 		dbConn.Port,
@@ -27,10 +27,11 @@ func DBManager(config utilities.Config) *sql.DB {
 
 	err = db.Ping()
 	if err != nil {
+		logger.Error("Failed to ping db")
 		panic(err)
 	}
 
-	for _, query := range config.DBTables {
+	for _, query := range cfg.DBTables {
 		createTables(db, query)
 	}
 
@@ -43,6 +44,7 @@ func createTables(db *sql.DB, query string) {
 	_, err := db.Exec(query)
 
 	if err != nil {
+		logger.Error("Failed to execute query")
 		panic(err)
 	}
 

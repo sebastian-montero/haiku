@@ -2,8 +2,8 @@ package repositories
 
 import (
 	"database/sql"
-	"wip/internal/models"
-	"wip/internal/utils"
+	"wout/internal/models"
+	"wout/internal/utils"
 )
 
 type NotebookRepository struct {
@@ -22,7 +22,7 @@ func (repo *NotebookRepository) CreateNotebook(notebook *models.Notebook) error 
 	return err
 }
 
-func (repo *NotebookRepository) GetNotebookByID(id string) (models.Notebook, error){
+func (repo *NotebookRepository) GetNotebookByID(id string) (models.Notebook, error) {
 	query := `SELECT * FROM notebooks WHERE id = $1`
 
 	var notebook models.Notebook
