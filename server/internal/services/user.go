@@ -31,5 +31,16 @@ func (s *UserService) UpdateUser(user *models.User) error {
 	if err != nil {
 		return err
 	}
-	return s.Repository.UpdateUser(user)
+
+	err = s.Repository.UpdateUser(user)
+	if err != nil {
+		return err
+	}
+
+	updatedUser, err := s.Repository.GetUserByID(strconv.Itoa(user.ID))
+	if err != nil {
+		return err
+	}
+	*user = updatedUser
+	return nil
 }

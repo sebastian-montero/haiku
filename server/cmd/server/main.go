@@ -30,7 +30,7 @@ func main() {
 	r.HandleFunc("/users/{id}", userHandler.DeleteUserByID).Methods("DELETE")
 
 	r.HandleFunc("/notebooks", notebookHandler.CreateNotebook).Methods("POST")
-	// r.HandleFunc("/notebooks", userHandler.UpdateUser).Methods("PUT")
+	r.HandleFunc("/notebooks", notebookHandler.UpdateNotebook).Methods("PUT")
 	r.HandleFunc("/notebooks/{id}", notebookHandler.GetNotebookByID).Methods("GET")
 	r.HandleFunc("/notebooks/{id}", notebookHandler.DeleteNotebookByID).Methods("DELETE")
 

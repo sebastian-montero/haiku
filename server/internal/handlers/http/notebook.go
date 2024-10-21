@@ -63,17 +63,23 @@ func (h *NotebookHTTPHandler) DeleteNotebookByID(w http.ResponseWriter, r *http.
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// func (h *NotebookHTTPHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (h *NotebookHTTPHandler) UpdateNotebook(w http.ResponseWriter, r *http.Request) {
 
-// 	var user models.User
-// 	err := json.NewDecoder(r.Body).Decode(&user)
-// 	if err != nil {
-// 		http.Error(w, "Invalid input", http.StatusBadRequest)
-// 		return
-// 	}
+	var notebook models.Notebook
+	err := json.NewDecoder(r.Body).Decode(&notebook)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to decode request body: %v", err))
+		http.Error(w, "Invalid input", http.StatusBadRequest)
+		return
+	}
 
-// 	h.Service.UpdateUser(&user)
+	err = h.Service.UpdateNotebook(&notebook)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to update notebook: %v", err))
+		http.Error(w, "Failed to update notebook", http.StatusInternalServerError)
+		return
+	}
 
-// 	w.WriteHeader(http.StatusOK)
-// 	json.NewEncoder(w).Encode(user)
-// }
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(notebook)
+}

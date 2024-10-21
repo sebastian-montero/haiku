@@ -36,10 +36,9 @@ func (repo *NotebookRepository) DeleteNotebookByID(id string) error {
 	return err
 }
 
-// func (repo *NotebookRepository) UpdateUser(user *models.User) {
-// 	query := `UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4`
-// 	_, err := repo.DB.Exec(query, user.Username, user.Email, user.Password, user.ID)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
+func (repo *NotebookRepository) UpdateNotebook(notebook *models.Notebook) error {
+	now := utils.GetStringTime()
+	query := `UPDATE notebooks SET title = $1, latest_content = $2, last_updated_at = $3 WHERE id = $4`
+	_, err := repo.DB.Exec(query, notebook.Title, notebook.LatestContent, now, notebook.ID)
+	return err
+}
