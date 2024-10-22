@@ -46,7 +46,7 @@ func main() {
 	r.HandleFunc("/content", contentHandler.CreateContent).Methods("POST")
 	r.HandleFunc("/content/by_session/{session_id}", contentHandler.GetLatestContentBySessionId).Methods("GET")
 
-	// Join Session: Other users can join an active session to observe or contribute. <- this is websocket
+	// r.HandleFunc("/sessions/ws", sessionHandler.WebSocketHandler)
 
 	log.Print("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", withCORS(r)))
