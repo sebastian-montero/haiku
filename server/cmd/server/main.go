@@ -22,6 +22,7 @@ func main() {
 
 	userHandler := initalizer.InitUser(db)
 	notebookHandler := initalizer.InitNotebook(db)
+	sessionHandler := initalizer.InitSession(db)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/users", userHandler.CreateUser).Methods("POST")
@@ -29,10 +30,29 @@ func main() {
 	r.HandleFunc("/users/{id}", userHandler.GetUserByID).Methods("GET")
 	r.HandleFunc("/users/{id}", userHandler.DeleteUserByID).Methods("DELETE")
 
+	// Get all user notebooks
 	r.HandleFunc("/notebooks", notebookHandler.CreateNotebook).Methods("POST")
 	r.HandleFunc("/notebooks", notebookHandler.UpdateNotebook).Methods("PUT")
 	r.HandleFunc("/notebooks/{id}", notebookHandler.GetNotebookByID).Methods("GET")
 	r.HandleFunc("/notebooks/{id}", notebookHandler.DeleteNotebookByID).Methods("DELETE")
+
+	// CREATE: Start Session: Users can start a new session in a notebook.
+	// UPDATE: End Session: The owner can end the session, marking it as inactive.
+	// Join Session: Other users can join an active session to observe or contribute. <- this is websocket
+	// View Active Sessions: Users can see a list of currently active sessions.
+	// UPDATE: Save Content: Content written in the session is stored in the SessionData.
+	// UPDATE: Trigger Notebook Update: When the session ends, the notebook's LastUpdatedAt and LatestContent fields are updated with the latest changes from the session.
+
+	r.HandleFunc("/sessions", sessionHandler.CreateSession).Methods("POST")
+	// r.HandleFunc("/sessions", sessionHandler.UpdateSession).Methods("PUT") <- this writes to session_data and nb update
+	// r.HandleFunc("/sessions/", sessionHandler.GetActiveSessions).Methods("GET")
+	// r.HandleFunc("/sessions/{id}", sessionHandler.GetSessionByID).Methods("GET")
+	// r.HandleFunc("/sessions/{id}", sessionHandler.DeleteSessionByID).Methods("DELETE")
+
+	// r.HandleFunc("/session_data", sessionDataHandler.CreateSession).Methods("POST")
+	// r.HandleFunc("/session_data", sessionDataHandler.UpdateSession).Methods("PUT")
+	// r.HandleFunc("/session_data/{id}", sessionDataHandler.GetSessionByID).Methods("GET")
+	// r.HandleFunc("/session_data/{id}", sessionDataHandler.DeleteSessionByID).Methods("DELETE")
 
 	log.Print("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", withCORS(r)))

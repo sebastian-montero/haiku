@@ -40,8 +40,8 @@ db_tables:
   - CREATE TABLE IF NOT EXISTS session_data (
       id SERIAL PRIMARY KEY,
       session_id INT REFERENCES sessions(id),
-      user_id INT REFERENCES users(id),
-      content TEXT NOT NULL,
+      owner_id INT REFERENCES users(id),
+      content TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
