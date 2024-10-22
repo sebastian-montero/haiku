@@ -37,10 +37,9 @@ db_tables:
     );
 
   # SESSION DATA TABLE
-  - CREATE TABLE IF NOT EXISTS session_data (
+  - CREATE TABLE IF NOT EXISTS content (
       id SERIAL PRIMARY KEY,
       session_id INT REFERENCES sessions(id),
-      owner_id INT REFERENCES users(id),
       content TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
