@@ -15,7 +15,7 @@ func sessionRepositoryManager(db *sql.DB) *repositories.SessionRepository {
 
 func sessionServiceManager(repository *repositories.SessionRepository) *services.SessionService {
 	logger.Info("Creating session service...")
-	return &services.SessionService{Repository: repository}
+	return &services.SessionService{SessionRepository: repository, NotebookRepository: notebookRepositoryManager(repository.DB)}
 }
 
 func sessionHTTPHandlerManager(service *services.SessionService) *http_handlers.SessionHTTPHandler {

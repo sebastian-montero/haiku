@@ -30,10 +30,10 @@ func (repo *NotebookRepository) GetNotebookByID(id string) (models.Notebook, err
 	return notebook, err
 }
 
-func (repo *NotebookRepository) GetNotebooksByUserID(userID string) ([]models.Notebook, error) {
+func (repo *NotebookRepository) GetNotebooksByOwnerId(owner_id string) ([]models.Notebook, error) {
 	query := `SELECT * FROM notebooks WHERE owner_id = $1`
 
-	rows, err := repo.DB.Query(query, userID)
+	rows, err := repo.DB.Query(query, owner_id)
 	if err != nil {
 		return nil, err
 	}
@@ -62,4 +62,11 @@ func (repo *NotebookRepository) UpdateNotebook(notebook *models.Notebook) error 
 	query := `UPDATE notebooks SET title = $1, latest_content = $2, last_updated_at = $3 WHERE id = $4`
 	_, err := repo.DB.Exec(query, notebook.Title, notebook.LatestContent, now, notebook.ID)
 	return err
+}
+
+func (repo *NotebookRepository) NotebookHasOwnerId(owner_id int, notebook_id int) (bool, error) {
+	query := `SELECT EXISTS(SELECT 1 FROM notebooks WHERE owner_id = $1 AND id = $2)`
+	var exists bool
+	err := repo.DB.QueryRow(query, owner_id, notebook_id).Scan(&exists)
+	return exists, err
 }

@@ -49,11 +49,11 @@ func (h *NotebookHTTPHandler) GetNotebookByID(w http.ResponseWriter, r *http.Req
 	json.NewEncoder(w).Encode(notebook)
 }
 
-func (h *NotebookHTTPHandler) GetNotebooksByUserId(w http.ResponseWriter, r *http.Request) {
+func (h *NotebookHTTPHandler) GetNotebooksByOwnerId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	userID := vars["user_id"]
+	ownerId := vars["owner_id"]
 
-	notebooks, err := h.Service.GetNotebooksByUserID(userID)
+	notebooks, err := h.Service.GetNotebooksByOwnerId(ownerId)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Failed to get notebooks: %v", err))
 		http.Error(w, "Failed to get notebooks", http.StatusInternalServerError)

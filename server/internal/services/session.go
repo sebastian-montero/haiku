@@ -1,16 +1,25 @@
 package services
 
 import (
+	"errors"
 	"wout/internal/models"
 	"wout/internal/repositories"
 )
 
 type SessionService struct {
-	Repository *repositories.SessionRepository
+	SessionRepository  *repositories.SessionRepository
+	NotebookRepository *repositories.NotebookRepository
 }
 
 func (s *SessionService) CreateSession(session *models.Session) error {
-	return s.Repository.CreateSession(session)
+	permission, err := s.NotebookRepository.NotebookHasOwnerId(session.OwnerID, session.NotebookID)
+	if err != nil {
+		return err
+	}
+	if !permission {
+		return errors.New("user does not have permission to create a session with this notebook")
+	}
+	return s.SessionRepository.CreateSession(session)
 }
 
 // func (s *NotebookService) GetNotebookByID(id string) (models.Notebook, error) {
