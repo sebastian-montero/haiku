@@ -42,10 +42,10 @@ func main() {
 	// UPDATE: Trigger Notebook Update: When the session ends, the notebook's LastUpdatedAt and LatestContent fields are updated with the latest changes from the session.
 
 	r.HandleFunc("/sessions", sessionHandler.CreateSession).Methods("POST")
-	// r.HandleFunc("/sessions", sessionHandler.UpdateSession).Methods("PUT") <- this writes to session_data and nb update
 	r.HandleFunc("/sessions", sessionHandler.GetActiveSessions).Methods("GET")
 	r.HandleFunc("/sessions/{id}", sessionHandler.GetSessionByID).Methods("GET")
 	r.HandleFunc("/sessions/{id}", sessionHandler.DeleteSessionByID).Methods("DELETE")
+	r.HandleFunc("/sessions/{id}/end", sessionHandler.EndSessionByID).Methods("PUT") // sets the session to inactive, sets end time, and updates notebook
 
 	// r.HandleFunc("/session_data", sessionDataHandler.CreateSession).Methods("POST")
 	// r.HandleFunc("/session_data", sessionDataHandler.UpdateSession).Methods("PUT")

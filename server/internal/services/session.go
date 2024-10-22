@@ -4,6 +4,7 @@ import (
 	"errors"
 	"wout/internal/models"
 	"wout/internal/repositories"
+	"wout/internal/utils"
 )
 
 type SessionService struct {
@@ -36,4 +37,25 @@ func (s *SessionService) DeleteSessionByID(id string) error {
 		return err
 	}
 	return s.SessionRepository.DeleteSessionByID(id)
+}
+
+func (s *SessionService) EndSessionByID(sessionId string, ownerId int) error {
+	session, err := s.SessionRepository.GetSessionByID(sessionId)
+	if err != nil {
+		return err
+	}
+	if !session.IsActive {
+		return errors.New("session is already inactive")
+	}
+
+	if session.OwnerID != ownerId {
+		return errors.New("user does not have permission to end this session")
+	}
+
+	session.IsActive = false
+
+	now := utils.GetStringTime()
+	session.EndedAt = &now
+
+	return s.SessionRepository.UpdateSession(&session)
 }

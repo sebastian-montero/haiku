@@ -64,3 +64,9 @@ func (repo *SessionRepository) DeleteSessionByID(id string) error {
 	_, err := repo.DB.Exec(query, id)
 	return err
 }
+
+func (repo *SessionRepository) UpdateSession(session *models.Session) error {
+	query := `UPDATE sessions SET is_active = $1, started_at = $2, ended_at = $3 WHERE id = $4`
+	_, err := repo.DB.Exec(query, session.IsActive, session.StartedAt, session.EndedAt, session.ID)
+	return err
+}

@@ -7,7 +7,7 @@ run: fmt
 	@echo ">>> Running server..."
 	go run cmd/server/main.go
 
-build: fmt build-docs
+build: fmt
 	@echo ">>> Building server..."
 	go build -o bin/server cmd/server/main.go
 

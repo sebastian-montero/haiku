@@ -9,3 +9,7 @@ type Session struct {
 	StartedAt *string `json:"started_at,omitempty"`
 	EndedAt   *string `json:"ended_at,omitempty"`
 }
+
+type SessionOwner struct {
+	OwnerID int `json:"owner_id"`
+}

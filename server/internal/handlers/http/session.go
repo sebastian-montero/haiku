@@ -73,3 +73,24 @@ func (h *SessionHTTPHandler) DeleteSessionByID(w http.ResponseWriter, r *http.Re
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (h *SessionHTTPHandler) EndSessionByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	sessionID := vars["id"]
+
+	var sessionOwner models.SessionOwner
+
+	if err := json.NewDecoder(r.Body).Decode(&sessionOwner); err != nil {
+		logger.Error(fmt.Sprintf("Failed to decode request body: %v", err))
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.Service.EndSessionByID(sessionID, sessionOwner.OwnerID); err != nil {
+		logger.Error(fmt.Sprintf("Failed to end session: %v", err))
+		http.Error(w, "Failed to end session", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
