@@ -22,33 +22,18 @@ func (s *SessionService) CreateSession(session *models.Session) error {
 	return s.SessionRepository.CreateSession(session)
 }
 
-// func (s *NotebookService) GetNotebookByID(id string) (models.Notebook, error) {
-// 	return s.Repository.GetNotebookByID(id)
-// }
+func (s *SessionService) GetActiveSessions() ([]models.Session, error) {
+	return s.SessionRepository.GetActiveSessions()
+}
 
-// func (s *NotebookService) DeleteNotebookByID(id string) error {
-// 	_, err := s.Repository.GetNotebookByID(id)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return s.Repository.DeleteNotebookByID(id)
-// }
+func (s *SessionService) GetSessionByID(id string) (models.Session, error) {
+	return s.SessionRepository.GetSessionByID(id)
+}
 
-// func (s *NotebookService) UpdateNotebook(notebook *models.Notebook) error {
-// 	_, err := s.Repository.GetNotebookByID(strconv.Itoa(notebook.ID))
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	err = s.Repository.UpdateNotebook(notebook)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	updatedNotebook, err := s.Repository.GetNotebookByID(strconv.Itoa(notebook.ID))
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	*notebook = updatedNotebook
-// 	return nil
-// }
+func (s *SessionService) DeleteSessionByID(id string) error {
+	_, err := s.SessionRepository.GetSessionByID(id)
+	if err != nil {
+		return err
+	}
+	return s.SessionRepository.DeleteSessionByID(id)
+}

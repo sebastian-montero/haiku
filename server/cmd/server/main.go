@@ -36,18 +36,16 @@ func main() {
 	r.HandleFunc("/notebooks/by_owner/{owner_id}", notebookHandler.GetNotebooksByOwnerId).Methods("GET")
 	r.HandleFunc("/notebooks/{id}", notebookHandler.DeleteNotebookByID).Methods("DELETE")
 
-	// CREATE: Start Session: Users can start a new session in a notebook.
 	// UPDATE: End Session: The owner can end the session, marking it as inactive.
 	// Join Session: Other users can join an active session to observe or contribute. <- this is websocket
-	// View Active Sessions: Users can see a list of currently active sessions.
 	// UPDATE: Save Content: Content written in the session is stored in the SessionData.
 	// UPDATE: Trigger Notebook Update: When the session ends, the notebook's LastUpdatedAt and LatestContent fields are updated with the latest changes from the session.
 
 	r.HandleFunc("/sessions", sessionHandler.CreateSession).Methods("POST")
 	// r.HandleFunc("/sessions", sessionHandler.UpdateSession).Methods("PUT") <- this writes to session_data and nb update
-	// r.HandleFunc("/sessions/", sessionHandler.GetActiveSessions).Methods("GET")
-	// r.HandleFunc("/sessions/{id}", sessionHandler.GetSessionByID).Methods("GET")
-	// r.HandleFunc("/sessions/{id}", sessionHandler.DeleteSessionByID).Methods("DELETE")
+	r.HandleFunc("/sessions", sessionHandler.GetActiveSessions).Methods("GET")
+	r.HandleFunc("/sessions/{id}", sessionHandler.GetSessionByID).Methods("GET")
+	r.HandleFunc("/sessions/{id}", sessionHandler.DeleteSessionByID).Methods("DELETE")
 
 	// r.HandleFunc("/session_data", sessionDataHandler.CreateSession).Methods("POST")
 	// r.HandleFunc("/session_data", sessionDataHandler.UpdateSession).Methods("PUT")

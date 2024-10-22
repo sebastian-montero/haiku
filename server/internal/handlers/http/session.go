@@ -7,6 +7,8 @@ import (
 	"wout/internal/models"
 	"wout/internal/services"
 	"wout/internal/utils/logger"
+
+	"github.com/gorilla/mux"
 )
 
 type SessionHTTPHandler struct {
@@ -32,52 +34,42 @@ func (h *SessionHTTPHandler) CreateSession(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(session)
 }
 
-// func (h *NotebookHTTPHandler) GetNotebookByID(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id := vars["id"]
+func (h *SessionHTTPHandler) GetActiveSessions(w http.ResponseWriter, r *http.Request) {
+	sessions, err := h.Service.GetActiveSessions()
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to get active sessions: %v", err))
+		http.Error(w, "Failed to get active sessions", http.StatusInternalServerError)
+		return
+	}
 
-// 	notebook, err := h.Service.GetNotebookByID(id)
-// 	if err != nil {
-// 		logger.Error(fmt.Sprintf("Failed to get notebook: %v", err))
-// 		http.Error(w, "Failed to get notebook", http.StatusInternalServerError)
-// 		return
-// 	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(sessions)
+}
 
-// 	w.WriteHeader(http.StatusOK)
-// 	json.NewEncoder(w).Encode(notebook)
-// }
+func (h *SessionHTTPHandler) GetSessionByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
 
-// func (h *NotebookHTTPHandler) DeleteNotebookByID(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id := vars["id"]
+	session, err := h.Service.GetSessionByID(id)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to get session: %v", err))
+		http.Error(w, "Failed to get session", http.StatusInternalServerError)
+		return
+	}
 
-// 	err := h.Service.DeleteNotebookByID(id)
-// 	if err != nil {
-// 		logger.Error(fmt.Sprintf("Failed to delete notebook: %v", err))
-// 		http.Error(w, "Failed to delete notebook", http.StatusInternalServerError)
-// 		return
-// 	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(session)
+}
 
-// 	w.WriteHeader(http.StatusNoContent)
-// }
+func (h *SessionHTTPHandler) DeleteSessionByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
 
-// func (h *NotebookHTTPHandler) UpdateNotebook(w http.ResponseWriter, r *http.Request) {
+	if err := h.Service.DeleteSessionByID(id); err != nil {
+		logger.Error(fmt.Sprintf("Failed to delete session: %v", err))
+		http.Error(w, "Failed to delete session", http.StatusInternalServerError)
+		return
+	}
 
-// 	var notebook models.Notebook
-// 	err := json.NewDecoder(r.Body).Decode(&notebook)
-// 	if err != nil {
-// 		logger.Error(fmt.Sprintf("Failed to decode request body: %v", err))
-// 		http.Error(w, "Invalid input", http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	err = h.Service.UpdateNotebook(&notebook)
-// 	if err != nil {
-// 		logger.Error(fmt.Sprintf("Failed to update notebook: %v", err))
-// 		http.Error(w, "Failed to update notebook", http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	w.WriteHeader(http.StatusOK)
-// 	json.NewEncoder(w).Encode(notebook)
-// }
+	w.WriteHeader(http.StatusNoContent)
+}
