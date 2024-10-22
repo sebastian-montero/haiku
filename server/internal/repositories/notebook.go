@@ -30,6 +30,27 @@ func (repo *NotebookRepository) GetNotebookByID(id string) (models.Notebook, err
 	return notebook, err
 }
 
+func (repo *NotebookRepository) GetNotebooksByUserID(userID string) ([]models.Notebook, error) {
+	query := `SELECT * FROM notebooks WHERE owner_id = $1`
+
+	rows, err := repo.DB.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var notebooks []models.Notebook
+	for rows.Next() {
+		var notebook models.Notebook
+		err = rows.Scan(&notebook.ID, &notebook.Title, &notebook.OwnerID, &notebook.LatestContent, &notebook.CreatedAt, &notebook.LastUpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		notebooks = append(notebooks, notebook)
+	}
+	return notebooks, nil
+}
+
 func (repo *NotebookRepository) DeleteNotebookByID(id string) error {
 	query := `DELETE FROM notebooks WHERE id = $1`
 	_, err := repo.DB.Exec(query, id)

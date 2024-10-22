@@ -30,10 +30,10 @@ func main() {
 	r.HandleFunc("/users/{id}", userHandler.GetUserByID).Methods("GET")
 	r.HandleFunc("/users/{id}", userHandler.DeleteUserByID).Methods("DELETE")
 
-	// Get all user notebooks
 	r.HandleFunc("/notebooks", notebookHandler.CreateNotebook).Methods("POST")
 	r.HandleFunc("/notebooks", notebookHandler.UpdateNotebook).Methods("PUT")
 	r.HandleFunc("/notebooks/{id}", notebookHandler.GetNotebookByID).Methods("GET")
+	r.HandleFunc("/notebooks/by_user/{user_id}", notebookHandler.GetNotebooksByUserId).Methods("GET")
 	r.HandleFunc("/notebooks/{id}", notebookHandler.DeleteNotebookByID).Methods("DELETE")
 
 	// CREATE: Start Session: Users can start a new session in a notebook.

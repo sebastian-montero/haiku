@@ -49,6 +49,21 @@ func (h *NotebookHTTPHandler) GetNotebookByID(w http.ResponseWriter, r *http.Req
 	json.NewEncoder(w).Encode(notebook)
 }
 
+func (h *NotebookHTTPHandler) GetNotebooksByUserId(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID := vars["user_id"]
+
+	notebooks, err := h.Service.GetNotebooksByUserID(userID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to get notebooks: %v", err))
+		http.Error(w, "Failed to get notebooks", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(notebooks)
+}
+
 func (h *NotebookHTTPHandler) DeleteNotebookByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
