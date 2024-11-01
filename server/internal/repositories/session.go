@@ -71,3 +71,11 @@ func (repo *SessionRepository) SessionExistsByNotebookID(notebookID string) (mod
 	}
 	return session, true
 }
+
+func (repo *SessionRepository) GetSessionByNotebookID(notebookID int) (int, error) {
+	query := `SELECT * FROM sessions WHERE notebook_id = $1`
+
+	var session models.Session
+	err := repo.DB.QueryRow(query, notebookID).Scan(&session.ID, &session.NotebookID, &session.OwnerID, &session.IsActive, &session.StartedAt, &session.EndedAt)
+	return session.ID, err
+}

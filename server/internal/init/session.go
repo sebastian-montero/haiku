@@ -37,8 +37,9 @@ func sessionHTTPHandlerManager(service *services.SessionService) *http_handlers.
 func sessionWSHandlerManager(service *services.SessionService) *ws_handler.WebSocketHandler {
 	logger.Info("Creating session WebSocket handler...")
 	return &ws_handler.WebSocketHandler{
-		Service: service,
-		Clients: make(map[int]map[*websocket.Conn]bool),
+		Service:        service,
+		Clients:        make(map[int]map[*websocket.Conn]bool),
+		SessionContent: make(map[int]string),
 	}
 }
 

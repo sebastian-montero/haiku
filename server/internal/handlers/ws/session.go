@@ -15,9 +15,10 @@ import (
 )
 
 type WebSocketHandler struct {
-	Service *services.SessionService
-	Clients map[int]map[*websocket.Conn]bool // Allow multiple connections per notebook
-	Mutex   sync.Mutex
+	Service        *services.SessionService
+	Clients        map[int]map[*websocket.Conn]bool // Allow multiple connections per notebook
+	SessionContent map[int]string
+	Mutex          sync.Mutex
 }
 
 var upgrader = websocket.Upgrader{
@@ -115,6 +116,19 @@ func (h *WebSocketHandler) handleWrite(conn *websocket.Conn, notebookID, ownerID
 		if messageType == "end" {
 			logger.Info(fmt.Sprintf("Ending session for notebook %d", notebookID))
 			h.removeAllClientsFromNotebook(notebookID)
+			err := h.Service.EndSessionByID(strconv.Itoa(session.ID), ownerID)
+			if err != nil {
+				logger.Error(fmt.Sprintf("Failed to end session: %v", err))
+			}
+			err = h.Service.CreateContent(notebookID, h.SessionContent[notebookID])
+			if err != nil {
+				logger.Error(fmt.Sprintf("Failed to create notebook content: %v", err))
+			}
+			err = h.Service.UpdateNotebookContent(strconv.Itoa(notebookID), h.SessionContent[notebookID])
+			if err != nil {
+				logger.Error(fmt.Sprintf("Failed to update notebook content: %v", err))
+			}
+
 			break
 		}
 
@@ -143,6 +157,7 @@ func (h *WebSocketHandler) handleWrite(conn *websocket.Conn, notebookID, ownerID
 				break
 			}
 
+			h.SessionContent[notebookID] = content
 			h.broadcastMessage(notebookID, websocket.TextMessage, msg)
 		}
 	}

@@ -84,3 +84,29 @@ func (s *SessionService) EndSessionByID(sessionID string, ownerID int) error {
 func (s *SessionService) GetNotebookByID(id string) (models.Notebook, error) {
 	return s.NotebookRepository.GetNotebookByID(id)
 }
+
+func (s *SessionService) UpdateNotebookContent(notebookID string, content string) error {
+	notebook, err := s.NotebookRepository.GetNotebookByID(notebookID)
+	if err != nil {
+		return err
+	}
+
+	notebook.LatestContent = content
+
+	return s.NotebookRepository.UpdateNotebook(&notebook)
+	// update UpdateNotebookContent
+
+}
+
+func (s *SessionService) CreateContent(notebookID int, msg string) error {
+	sessionID, err := s.SessionRepository.GetSessionByNotebookID(notebookID)
+	if err != nil {
+		return err
+	}
+
+	content := models.Content{
+		SessionID: sessionID,
+		Content:   msg,
+	}
+	return s.ContentRepository.CreateContent(&content)
+}
