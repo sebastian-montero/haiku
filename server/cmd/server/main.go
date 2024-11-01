@@ -22,8 +22,8 @@ func main() {
 
 	userHandler := initalizer.InitUser(db)
 	notebookHandler := initalizer.InitNotebook(db)
-	sessionHandler := initalizer.InitSession(db)
 	contentHandler := initalizer.InitContent(db)
+	sessionHTTPHandler, sessionWSHandler := initalizer.InitSession(db)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/users", userHandler.CreateUser).Methods("POST")
@@ -37,16 +37,17 @@ func main() {
 	r.HandleFunc("/notebooks/by_owner/{owner_id}", notebookHandler.GetNotebooksByOwnerId).Methods("GET")
 	r.HandleFunc("/notebooks/{id}", notebookHandler.DeleteNotebookByID).Methods("DELETE")
 
-	r.HandleFunc("/sessions", sessionHandler.CreateSession).Methods("POST")
-	r.HandleFunc("/sessions", sessionHandler.GetActiveSessions).Methods("GET")
-	r.HandleFunc("/sessions/{id}", sessionHandler.GetSessionByID).Methods("GET")
-	r.HandleFunc("/sessions/{id}", sessionHandler.DeleteSessionByID).Methods("DELETE")
-	r.HandleFunc("/sessions/{id}/end", sessionHandler.EndSessionByID).Methods("PUT")
+	r.HandleFunc("/sessions", sessionHTTPHandler.CreateSession).Methods("POST")
+	r.HandleFunc("/sessions", sessionHTTPHandler.GetActiveSessions).Methods("GET")
+	r.HandleFunc("/sessions/{id}", sessionHTTPHandler.GetSessionByID).Methods("GET")
+	r.HandleFunc("/sessions/{id}", sessionHTTPHandler.DeleteSessionByID).Methods("DELETE")
+	r.HandleFunc("/sessions/{id}/end", sessionHTTPHandler.EndSessionByID).Methods("PUT")
 
 	r.HandleFunc("/content", contentHandler.CreateContent).Methods("POST")
 	r.HandleFunc("/content/by_session/{session_id}", contentHandler.GetLatestContentBySessionId).Methods("GET")
 
-	// r.HandleFunc("/sessions/ws", sessionHandler.WebSocketHandler)
+	// `ws://localhost:8080/ws/${notebookID}?owner_id=${ownerID}`
+	r.HandleFunc("/ws/{notebookID}", sessionWSHandler.WebSocketEndpoint).Methods("GET")
 
 	log.Print("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", withCORS(r)))

@@ -2,17 +2,21 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"wout/internal/models"
 	"wout/internal/repositories"
 	"wout/internal/utils"
+	"wout/internal/utils/logger"
 )
 
 type SessionService struct {
 	SessionRepository  *repositories.SessionRepository
 	NotebookRepository *repositories.NotebookRepository
+	ContentRepository  *repositories.ContentRepository
 }
 
 func (s *SessionService) CreateSession(session *models.Session) error {
+	fmt.Println(fmt.Sprintf("Creating session with ownerID %v and notebookID %v", session.OwnerID, session.NotebookID))
 	permission, err := s.NotebookRepository.NotebookHasOwnerId(session.OwnerID, session.NotebookID)
 	if err != nil {
 		return err
@@ -31,6 +35,23 @@ func (s *SessionService) GetSessionByID(id string) (models.Session, error) {
 	return s.SessionRepository.GetSessionByID(id)
 }
 
+func (s *SessionService) SessionExistsByNotebookID(notebookID string) (models.Session, bool) {
+	return s.SessionRepository.SessionExistsByNotebookID(notebookID)
+}
+
+func (s *SessionService) ActivateSession(sessionID string) error {
+	session, err := s.SessionRepository.GetSessionByID(sessionID)
+	if err != nil {
+		return err
+	}
+	if session.IsActive {
+		logger.Info("Session is already active")
+	}
+
+	session.IsActive = true
+	return s.SessionRepository.UpdateSession(&session)
+}
+
 func (s *SessionService) DeleteSessionByID(id string) error {
 	_, err := s.SessionRepository.GetSessionByID(id)
 	if err != nil {
@@ -39,8 +60,8 @@ func (s *SessionService) DeleteSessionByID(id string) error {
 	return s.SessionRepository.DeleteSessionByID(id)
 }
 
-func (s *SessionService) EndSessionByID(sessionId string, ownerId int) error {
-	session, err := s.SessionRepository.GetSessionByID(sessionId)
+func (s *SessionService) EndSessionByID(sessionID string, ownerID int) error {
+	session, err := s.SessionRepository.GetSessionByID(sessionID)
 	if err != nil {
 		return err
 	}
@@ -48,7 +69,7 @@ func (s *SessionService) EndSessionByID(sessionId string, ownerId int) error {
 		return errors.New("session is already inactive")
 	}
 
-	if session.OwnerID != ownerId {
+	if session.OwnerID != ownerID {
 		return errors.New("user does not have permission to end this session")
 	}
 
@@ -58,4 +79,8 @@ func (s *SessionService) EndSessionByID(sessionId string, ownerId int) error {
 	session.EndedAt = &now
 
 	return s.SessionRepository.UpdateSession(&session)
+}
+
+func (s *SessionService) GetNotebookByID(id string) (models.Notebook, error) {
+	return s.NotebookRepository.GetNotebookByID(id)
 }

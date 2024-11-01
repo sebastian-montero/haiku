@@ -10,13 +10,6 @@ type ContentRepository struct {
 	DB *sql.DB
 }
 
-// type Content struct {
-// 	ID        int    `json:"id"`
-// 	SessionID int    `json:"session_id"`
-// 	Content   string `json:"content"`
-// 	CreatedAt *string `json:"created_at,omitempty"`
-// }
-
 func (repo *ContentRepository) CreateContent(content *models.Content) error {
 	if content.CreatedAt == nil {
 		now := utils.GetStringTime()

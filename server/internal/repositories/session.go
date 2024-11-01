@@ -60,3 +60,14 @@ func (repo *SessionRepository) UpdateSession(session *models.Session) error {
 	_, err := repo.DB.Exec(query, session.IsActive, session.StartedAt, session.EndedAt, session.ID)
 	return err
 }
+
+func (repo *SessionRepository) SessionExistsByNotebookID(notebookID string) (models.Session, bool) {
+	query := `SELECT * FROM sessions WHERE notebook_id = $1`
+
+	var session models.Session
+	err := repo.DB.QueryRow(query, notebookID).Scan(&session.ID, &session.NotebookID, &session.OwnerID, &session.IsActive, &session.StartedAt, &session.EndedAt)
+	if err != nil {
+		return session, false
+	}
+	return session, true
+}
