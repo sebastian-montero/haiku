@@ -16,7 +16,7 @@ import (
 
 type WebSocketHandler struct {
 	Service *services.SessionService
-	Clients map[int]map[*websocket.Conn]bool
+	Clients map[int]map[*websocket.Conn]bool // Allow multiple connections per notebook
 	Mutex   sync.Mutex
 }
 
@@ -30,17 +30,10 @@ func (h *WebSocketHandler) WebSocketEndpoint(w http.ResponseWriter, r *http.Requ
 	vars := mux.Vars(r)
 	notebookIDStr := vars["notebook_id"]
 	ownerIDStr := r.URL.Query().Get("owner_id")
+	connType := r.URL.Query().Get("conn_type")
 
-	notebookID, err := strconv.Atoi(notebookIDStr)
-	if err != nil {
-		logger.Error("Invalid notebook_id")
-		return
-	}
-	ownerID, err := strconv.Atoi(ownerIDStr)
-	if err != nil {
-		logger.Error("Invalid owner_id")
-		return
-	}
+	notebookID, _ := strconv.Atoi(notebookIDStr)
+	ownerID, _ := strconv.Atoi(ownerIDStr)
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -48,6 +41,14 @@ func (h *WebSocketHandler) WebSocketEndpoint(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	defer conn.Close()
+
+	h.Mutex.Lock()
+	if h.Clients[notebookID] == nil {
+		h.Clients[notebookID] = make(map[*websocket.Conn]bool)
+	}
+	h.Clients[notebookID][conn] = true
+	logger.Info(fmt.Sprintf("New connection created for notebook %d (Owner ID: %d). Total connections: %d", notebookID, ownerID, len(h.Clients[notebookID])))
+	h.Mutex.Unlock()
 
 	if connType == "read" {
 		h.handleRead(conn, notebookID)
@@ -58,16 +59,14 @@ func (h *WebSocketHandler) WebSocketEndpoint(w http.ResponseWriter, r *http.Requ
 
 func (h *WebSocketHandler) handleRead(conn *websocket.Conn, notebookID int) {
 	for {
-		_, msg, err := conn.ReadMessage()
+		_, _, err := conn.ReadMessage()
 		if err != nil {
 			logger.Error(fmt.Sprintf("WebSocket read error: %v", err))
+			h.removeClient(conn, notebookID)
 			break
 		}
-
-		logger.Info(fmt.Sprintf("Received message on notebook %d: %s", notebookID, string(msg)))
 	}
 }
-
 func (h *WebSocketHandler) handleWrite(conn *websocket.Conn, notebookID, ownerID int) {
 	h.Mutex.Lock()
 	session, ok := h.Service.SessionExistsByNotebookID(strconv.Itoa(notebookID))
@@ -89,11 +88,6 @@ func (h *WebSocketHandler) handleWrite(conn *websocket.Conn, notebookID, ownerID
 		h.Mutex.Unlock()
 		return
 	}
-
-	if h.Clients[notebookID] == nil {
-		h.Clients[notebookID] = make(map[*websocket.Conn]bool)
-	}
-	h.Clients[notebookID][conn] = true
 	h.Mutex.Unlock()
 
 	for {
@@ -101,6 +95,7 @@ func (h *WebSocketHandler) handleWrite(conn *websocket.Conn, notebookID, ownerID
 		if err != nil {
 			logger.Error(fmt.Sprintf("WebSocket read error: %v", err))
 			h.removeClient(conn, notebookID)
+			h.removeAllClientsFromNotebook(notebookID)
 			break
 		}
 
@@ -110,39 +105,105 @@ func (h *WebSocketHandler) handleWrite(conn *websocket.Conn, notebookID, ownerID
 			continue
 		}
 
-		parsedMsg["owner_id"] = ownerID
-		parsedMsg["notebook_id"] = notebookID
-		parsedMsg["session_id"] = session.ID
+		// Handle "send" and "end" message types
+		messageType, ok := parsedMsg["type"].(string)
+		if !ok {
+			logger.Error("Message type not specified or invalid")
+			continue
+		}
 
-		if parsedMsg["type"] == "end" {
+		if messageType == "end" {
 			logger.Info(fmt.Sprintf("Ending session for notebook %d", notebookID))
+			h.removeAllClientsFromNotebook(notebookID)
 			break
 		}
-		if parsedMsg["type"] == "write" {
-			logger.Info(fmt.Sprintf("Broadcasting message on notebook %d", notebookID))
-			h.broadcastMessage(notebookID, parsedMsg)
-		}
 
+		if messageType == "send" {
+			content, ok := parsedMsg["content"].(string)
+			if !ok {
+				logger.Error("Content field missing or invalid in 'send' message")
+				continue
+			}
+
+			logger.Info(fmt.Sprintf("Broadcasting 'send' message on notebook %d: %s", notebookID, content))
+
+			responseMsg := map[string]interface{}{
+				"status":      "success",
+				"type":        "send",
+				"content":     content,
+				"owner_id":    ownerID,
+				"notebook_id": notebookID,
+				"session_id":  session.ID,
+			}
+
+			err = conn.WriteJSON(responseMsg)
+			if err != nil {
+				logger.Error(fmt.Sprintf("WebSocket write error: %v", err))
+				h.removeClient(conn, notebookID)
+				break
+			}
+
+			h.broadcastMessage(notebookID, websocket.TextMessage, msg)
+		}
 	}
 }
 
 func (h *WebSocketHandler) removeClient(conn *websocket.Conn, notebookID int) {
 	h.Mutex.Lock()
-	delete(h.Clients[notebookID], conn)
+	defer h.Mutex.Unlock()
+
+	if _, exists := h.Clients[notebookID][conn]; exists {
+		delete(h.Clients[notebookID], conn)
+		logger.Info(fmt.Sprintf("Connection removed for notebook %d. Remaining connections: %d", notebookID, len(h.Clients[notebookID])))
+	}
+
 	if len(h.Clients[notebookID]) == 0 {
 		delete(h.Clients, notebookID)
+		logger.Info(fmt.Sprintf("All connections closed for notebook %d. Notebook entry removed.", notebookID))
 	}
-	h.Mutex.Unlock()
 }
 
-func (h *WebSocketHandler) broadcastMessage(notebookID int, message map[string]interface{}) {
+func (h *WebSocketHandler) broadcastMessage(notebookID int, messageType int, message []byte) {
 	h.Mutex.Lock()
 	defer h.Mutex.Unlock()
+
 	for client := range h.Clients[notebookID] {
-		if err := client.WriteJSON(message); err != nil {
-			logger.Error(fmt.Sprintf("WebSocket broadcast error: %v", err))
+		if err := client.WriteMessage(messageType, message); err != nil {
+			logger.Error(fmt.Sprintf("WebSocket broadcast error to client: %v", err))
 			client.Close()
 			delete(h.Clients[notebookID], client)
+			logger.Info(fmt.Sprintf("Faulty connection removed for notebook %d. Remaining connections: %d", notebookID, len(h.Clients[notebookID])))
 		}
 	}
+}
+
+func (h *WebSocketHandler) removeAllClientsFromNotebook(notebookID int) {
+	h.Mutex.Lock()
+	defer h.Mutex.Unlock()
+
+	connections, exists := h.Clients[notebookID]
+	if !exists {
+		logger.Info(fmt.Sprintf("No connections found for notebook %d", notebookID))
+		return
+	}
+
+	for client := range connections {
+		// Close the WebSocket connection
+		err := client.Close()
+		if err != nil {
+			logger.Error(fmt.Sprintf("Error closing connection for notebook %d: %v", notebookID, err))
+		} else {
+			logger.Info(fmt.Sprintf("Connection closed for notebook %d", notebookID))
+		}
+		// Remove the client from the notebook's map
+		delete(connections, client)
+	}
+
+	// Remove the notebook entry if there are no more connections
+	if len(connections) == 0 {
+		delete(h.Clients, notebookID)
+		logger.Info(fmt.Sprintf("All connections removed for notebook %d", notebookID))
+	}
+
+	logger.Info(fmt.Sprintf("All clients have been removed and connections closed for notebook %d", notebookID))
 }
