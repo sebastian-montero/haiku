@@ -16,22 +16,22 @@ import (
 
 type WebSocketHandler struct {
 	Service        *services.SessionService
-	Clients        map[int]map[*websocket.Conn]bool // Allow multiple connections per notebook
+	Clients        map[int]map[*websocket.Conn]bool
 	SessionContent map[int]string
 	Mutex          sync.Mutex
 }
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
-		return true // Adjust as needed for security
+		return true
 	},
 }
 
 func (h *WebSocketHandler) WebSocketEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	notebookIDStr := vars["notebook_id"]
+	connType := vars["notebook_id"]
 	ownerIDStr := r.URL.Query().Get("owner_id")
-	connType := r.URL.Query().Get("conn_type")
 
 	notebookID, _ := strconv.Atoi(notebookIDStr)
 	ownerID, _ := strconv.Atoi(ownerIDStr)

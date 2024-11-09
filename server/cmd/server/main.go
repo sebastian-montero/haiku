@@ -47,7 +47,7 @@ func main() {
 	r.HandleFunc("/content/by_session/{session_id}", contentHandler.GetLatestContentBySessionId).Methods("GET")
 
 	// `ws://localhost:8080/ws/${notebookID}?owner_id=${ownerID}`
-	r.HandleFunc("/ws/{notebook_id}", sessionWSHandler.WebSocketEndpoint).Methods("GET")
+	r.HandleFunc("/ws/{conn_type}/{notebook_id}", sessionWSHandler.WebSocketEndpoint).Methods("GET")
 
 	log.Print("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", withCORS(r)))

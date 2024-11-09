@@ -1,0 +1,2 @@
+- All IDs stored and processed as strings
+- Review security - auth, pws, entry points etc
