@@ -2,10 +2,10 @@ package initalizer
 
 import (
 	"database/sql"
-	http_handlers "wout/internal/handlers/http"
-	"wout/internal/repositories"
-	"wout/internal/services"
-	"wout/internal/utils/logger"
+	http_handlers "haiku/internal/handlers/http"
+	"haiku/internal/repositories"
+	"haiku/internal/services"
+	"haiku/internal/utils/logger"
 )
 
 func notebookRepositoryManager(db *sql.DB) *repositories.NotebookRepository {

@@ -3,12 +3,12 @@ package ws_handler
 import (
 	"encoding/json"
 	"fmt"
+	"haiku/internal/models"
+	"haiku/internal/services"
+	"haiku/internal/utils/logger"
 	"net/http"
 	"strconv"
 	"sync"
-	"wout/internal/models"
-	"wout/internal/services"
-	"wout/internal/utils/logger"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"

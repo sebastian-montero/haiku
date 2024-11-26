@@ -3,10 +3,10 @@ package http_handlers
 import (
 	"encoding/json"
 	"fmt"
+	"haiku/internal/models"
+	"haiku/internal/services"
+	"haiku/internal/utils/logger"
 	"net/http"
-	"wout/internal/models"
-	"wout/internal/services"
-	"wout/internal/utils/logger"
 
 	"github.com/gorilla/mux"
 )

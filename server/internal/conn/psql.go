@@ -3,8 +3,8 @@ package psql
 import (
 	"database/sql"
 	"fmt"
-	utilities "wout/internal/utils"
-	"wout/internal/utils/logger"
+	utilities "haiku/internal/utils"
+	"haiku/internal/utils/logger"
 
 	_ "github.com/lib/pq"
 )

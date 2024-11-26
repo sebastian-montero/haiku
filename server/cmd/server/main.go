@@ -3,11 +3,11 @@ package main
 
 import (
 	"database/sql"
+	psql "haiku/internal/conn"
+	initalizer "haiku/internal/init"
+	"haiku/internal/utils"
 	"log"
 	"net/http"
-	psql "wout/internal/conn"
-	initalizer "wout/internal/init"
-	"wout/internal/utils"
 
 	"github.com/gorilla/mux"
 )

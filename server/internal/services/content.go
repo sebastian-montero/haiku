@@ -1,9 +1,9 @@
 package services
 
 import (
+	"haiku/internal/models"
+	"haiku/internal/repositories"
 	"strconv"
-	"wout/internal/models"
-	"wout/internal/repositories"
 )
 
 type ContentService struct {

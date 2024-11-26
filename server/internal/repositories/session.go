@@ -2,8 +2,8 @@ package repositories
 
 import (
 	"database/sql"
-	"wout/internal/models"
-	"wout/internal/utils"
+	"haiku/internal/models"
+	"haiku/internal/utils"
 )
 
 type SessionRepository struct {

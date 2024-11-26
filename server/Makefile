@@ -19,7 +19,3 @@ build-docs:
 run-docs:
 	@echo ">>> Running docs..."
 	godoc -http=:6060 -index_files=./docs/index.idx
-
-docker-up:
-	@echo ">>> Starting docker compose..."
-	docker compose up -d

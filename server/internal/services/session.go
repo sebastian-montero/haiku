@@ -3,10 +3,10 @@ package services
 import (
 	"errors"
 	"fmt"
-	"wout/internal/models"
-	"wout/internal/repositories"
-	"wout/internal/utils"
-	"wout/internal/utils/logger"
+	"haiku/internal/models"
+	"haiku/internal/repositories"
+	"haiku/internal/utils"
+	"haiku/internal/utils/logger"
 )
 
 type SessionService struct {

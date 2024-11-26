@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"database/sql"
-	"wout/internal/models"
+	"haiku/internal/models"
 )
 
 type UserRepository struct {

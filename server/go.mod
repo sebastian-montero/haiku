@@ -1,4 +1,4 @@
-module wout
+module haiku
 
 go 1.22.1
 

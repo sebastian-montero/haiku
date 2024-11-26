@@ -2,11 +2,11 @@ package initalizer
 
 import (
 	"database/sql"
-	http_handlers "wout/internal/handlers/http"
-	ws_handler "wout/internal/handlers/ws"
-	"wout/internal/repositories"
-	"wout/internal/services"
-	"wout/internal/utils/logger"
+	http_handlers "haiku/internal/handlers/http"
+	ws_handler "haiku/internal/handlers/ws"
+	"haiku/internal/repositories"
+	"haiku/internal/services"
+	"haiku/internal/utils/logger"
 
 	"github.com/gorilla/websocket"
 )
