@@ -13,20 +13,33 @@ import (
 
 var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
+type UserClaim struct {
+	UserID int `json:"user_id"`
+	jwt.StandardClaims
+}
+
 func GenerateJWT(user models.User) (string, error) {
-    expirationTime := time.Now().Add(24 * time.Hour)
-    claims := &jwt.StandardClaims{
-        Subject:   fmt.Sprintf("%d", user.ID),
-        ExpiresAt: expirationTime.Unix(),
-    }
+	expirationTime := time.Now().Add(24 * time.Hour)
 
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-    tokenString, err := token.SignedString(jwtKey)
-    if err != nil {
-        return "", err
-    }
+	// Create custom claims including the user ID
+	claims := &UserClaim{
+		UserID: user.ID,
+		StandardClaims: jwt.StandardClaims{
+			Subject:   fmt.Sprintf("%d", user.ID),
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
 
-    return tokenString, nil
+	// Create the token with the claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Sign the token with the secret key
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
 
 func AuthMiddleware(next http.Handler) http.Handler {
