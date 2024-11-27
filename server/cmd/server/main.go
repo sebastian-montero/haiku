@@ -26,30 +26,32 @@ func main() {
 	sessionHTTPHandler, sessionWSHandler := initalizer.InitSession(db)
 
 	r := mux.NewRouter()
-	r.HandleFunc("/users", userHandler.CreateUser).Methods("POST")
-	r.HandleFunc("/users", userHandler.UpdateUser).Methods("PUT")
-	r.HandleFunc("/users/{id}", userHandler.GetUserByID).Methods("GET")
-	r.HandleFunc("/users/{id}", userHandler.DeleteUserByID).Methods("DELETE")
 
 	r.HandleFunc("/login", userHandler.Login).Methods("POST")
 	r.HandleFunc("/signup", userHandler.SignUp).Methods("POST")
 
-	r.HandleFunc("/notebooks", notebookHandler.CreateNotebook).Methods("POST")
-	r.HandleFunc("/notebooks", notebookHandler.UpdateNotebook).Methods("PUT")
-	r.HandleFunc("/notebooks/{id}", notebookHandler.GetNotebookByID).Methods("GET")
-	r.HandleFunc("/notebooks/by_owner/{owner_id}", notebookHandler.GetNotebooksByOwnerId).Methods("GET")
-	r.HandleFunc("/notebooks/{id}", notebookHandler.DeleteNotebookByID).Methods("DELETE")
+	api := r.PathPrefix("/").Subrouter()
+	api.Use(utils.AuthMiddleware)
 
-	r.HandleFunc("/sessions", sessionHTTPHandler.CreateSession).Methods("POST")
-	r.HandleFunc("/sessions", sessionHTTPHandler.GetActiveSessions).Methods("GET")
-	r.HandleFunc("/sessions/{id}", sessionHTTPHandler.GetSessionByID).Methods("GET")
-	r.HandleFunc("/sessions/{id}", sessionHTTPHandler.DeleteSessionByID).Methods("DELETE")
-	r.HandleFunc("/sessions/{id}/end", sessionHTTPHandler.EndSessionByID).Methods("PUT")
+	api.HandleFunc("/users", userHandler.UpdateUser).Methods("PUT")
+	api.HandleFunc("/users/{id}", userHandler.GetUserByID).Methods("GET")
+	api.HandleFunc("/users/{id}", userHandler.DeleteUserByID).Methods("DELETE")
 
-	r.HandleFunc("/content", contentHandler.CreateContent).Methods("POST")
-	r.HandleFunc("/content/by_session/{session_id}", contentHandler.GetLatestContentBySessionId).Methods("GET")
+	api.HandleFunc("/notebooks", notebookHandler.CreateNotebook).Methods("POST")
+	api.HandleFunc("/notebooks", notebookHandler.UpdateNotebook).Methods("PUT")
+	api.HandleFunc("/notebooks/{id}", notebookHandler.GetNotebookByID).Methods("GET")
+	api.HandleFunc("/notebooks/by_owner/{owner_id}", notebookHandler.GetNotebooksByOwnerId).Methods("GET")
+	api.HandleFunc("/notebooks/{id}", notebookHandler.DeleteNotebookByID).Methods("DELETE")
 
-	// `ws://localhost:8080/ws/${notebookID}?owner_id=${ownerID}`
+	api.HandleFunc("/sessions", sessionHTTPHandler.CreateSession).Methods("POST")
+	api.HandleFunc("/sessions", sessionHTTPHandler.GetActiveSessions).Methods("GET")
+	api.HandleFunc("/sessions/{id}", sessionHTTPHandler.GetSessionByID).Methods("GET")
+	api.HandleFunc("/sessions/{id}", sessionHTTPHandler.DeleteSessionByID).Methods("DELETE")
+	api.HandleFunc("/sessions/{id}/end", sessionHTTPHandler.EndSessionByID).Methods("PUT")
+
+	api.HandleFunc("/content", contentHandler.CreateContent).Methods("POST")
+	api.HandleFunc("/content/by_session/{session_id}", contentHandler.GetLatestContentBySessionId).Methods("GET")
+
 	r.HandleFunc("/ws/{conn_type}/{notebook_id}", sessionWSHandler.WebSocketEndpoint).Methods("GET")
 
 	log.Print("Server started on :8080")
