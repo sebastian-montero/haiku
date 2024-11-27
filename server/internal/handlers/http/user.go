@@ -107,7 +107,6 @@ func (h *UserHTTPHandler) Login(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Decode the stored salt
     salt, err := base64.StdEncoding.DecodeString(user.Salt)
     if err != nil {
         logger.Error(fmt.Sprintf("Failed to decode salt: %v", err))
@@ -115,7 +114,6 @@ func (h *UserHTTPHandler) Login(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Hash the provided password with the stored salt
     saltedPassword := append(salt, []byte(credentials.Password)...)
     if err := bcrypt.CompareHashAndPassword([]byte(user.Password), saltedPassword); err != nil {
         logger.Error(fmt.Sprintf("Invalid password: %v", err))
