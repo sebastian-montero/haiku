@@ -11,3 +11,7 @@ run-server-local:
 docker-down:
 	@echo ">>> Stopping docker compose..."
 	docker compose down
+
+docker-clean:
+	@echo ">>> Cleaning up docker compose..."
+	docker compose down --volumes --remove-orphans

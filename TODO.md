@@ -1,6 +1,6 @@
 
 server
-- [ ] add password hashing
+- [x] add password hashing
 - [ ] add authentication middleware
-- [ ] add sign up endpoint
-- [ ] add login endpoint
+- [x] add sign up endpoint
+- [x] add login endpoint

@@ -31,6 +31,9 @@ func main() {
 	r.HandleFunc("/users/{id}", userHandler.GetUserByID).Methods("GET")
 	r.HandleFunc("/users/{id}", userHandler.DeleteUserByID).Methods("DELETE")
 
+	r.HandleFunc("/login", userHandler.Login).Methods("POST")
+	r.HandleFunc("/signup", userHandler.SignUp).Methods("POST")
+
 	r.HandleFunc("/notebooks", notebookHandler.CreateNotebook).Methods("POST")
 	r.HandleFunc("/notebooks", notebookHandler.UpdateNotebook).Methods("PUT")
 	r.HandleFunc("/notebooks/{id}", notebookHandler.GetNotebookByID).Methods("GET")
