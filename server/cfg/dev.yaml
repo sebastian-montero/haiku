@@ -4,8 +4,8 @@ db_conn:
   host: "localhost"
   port: 5432
   user: "admin"
-  password: "admin"
-  dbname: "db"
+  password: "secret"
+  dbname: "haiku"
 
 db_tables:
   # USERS TABLE
