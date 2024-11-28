@@ -19,7 +19,7 @@ func (repo *UserRepository) GetUserByID(id string) (models.User, error) {
 	query := `SELECT * FROM users WHERE id = $1`
 
 	var user models.User
-	err := repo.DB.QueryRow(query, id).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+	err := repo.DB.QueryRow(query, id).Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.Salt)
 	return user, err
 }
 

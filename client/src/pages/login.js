@@ -71,7 +71,7 @@ export default function Login() {
               value={formData.username}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700 font-bold"
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700"
             />
           </div>
 
@@ -89,7 +89,7 @@ export default function Login() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700 font-bold"
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700"
             />
           </div>
 
@@ -115,7 +115,7 @@ export default function Login() {
         </form>
         <p className="text-xs text-center text-black">
   don't have an account?
-  <a href="#" className="hover:underline ml-1">sign up</a>
+  <a href="/signup" className="hover:underline ml-1">sign up</a>
           </p>
       </div>
     </div>

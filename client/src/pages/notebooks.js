@@ -104,14 +104,10 @@ export default function FrontPage() {
       minute: '2-digit',
     }).format(date);
   }
-  const handleButtonClick = (type) => {
-    console.log(`${type} clicked`);
-    // Add your navigation logic here
-  };
 
   return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-start px-4 py-5">
-      <NavBar onButtonClick={handleButtonClick} />
+      <NavBar />
 
 
       <div className="items-center justify-start py-2">
@@ -139,7 +135,7 @@ export default function FrontPage() {
         {/* Message Display */}
         {message && (
         <div
-          className={`text-xs mb-1 text-center ${
+          className={`text-xs my-3 text-center ${
             message.type === 'success' ? 'text-green-700' : 'text-red-700'
           }`}
         >
@@ -174,7 +170,7 @@ export default function FrontPage() {
             </button>
           ))
         ) : (
-          <p className="text-center text-gray-500">no notebooks found.</p>
+          <p className="my-10 text-center text-gray-500 text-xs">no notebooks found.</p>
         )}
       </div>
       </div>

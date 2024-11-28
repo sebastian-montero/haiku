@@ -48,10 +48,13 @@ func (s *UserService) DeleteUserByID(id string) error {
 }
 
 func (s *UserService) UpdateUser(user *models.User) error {
-	_, err := s.Repository.GetUserByID(strconv.Itoa(user.ID))
+	existingUser, err := s.Repository.GetUserByID(strconv.Itoa(user.ID))
 	if err != nil {
 		return err
 	}
+
+	user.Password = existingUser.Password
+	user.Salt = existingUser.Salt
 
 	err = s.Repository.UpdateUser(user)
 	if err != nil {
@@ -62,6 +65,7 @@ func (s *UserService) UpdateUser(user *models.User) error {
 	if err != nil {
 		return err
 	}
+
 	*user = updatedUser
 	return nil
 }

@@ -79,7 +79,7 @@ export default function Signup() {
               value={formData.username}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700 font-bold"
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700"
             />
           </div>
 
@@ -97,7 +97,7 @@ export default function Signup() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700 font-bold"
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700"
             />
           </div>
 
@@ -115,7 +115,7 @@ export default function Signup() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700 font-bold"
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700"
             />
           </div>
 
@@ -133,7 +133,7 @@ export default function Signup() {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700 font-bold"
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700"
             />
           </div>
           
@@ -158,7 +158,7 @@ export default function Signup() {
         </form>
         <p className="text-xs text-center text-black">
   have an account?
-  <a href="#" className="hover:underline ml-1">log in</a>
+  <a href="/login" className="hover:underline ml-1">log in</a>
           </p>
       </div>
     </div>
