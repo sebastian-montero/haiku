@@ -61,7 +61,7 @@ export default function Signup() {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-6">
-        <h1 className="text-3xl font-bold text-gray-800 tracking-wide text-center">haiku</h1>
+        <h1 className="text-3xl font-bold text-gray-800 tracking-wide text-center">haiku⿻</h1>
         <h2 className="text-xl font-bold text-gray-800 tracking-wide text-center">sign up</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -151,11 +151,15 @@ export default function Signup() {
 
           <button
             type="submit"
-            className="w-full py-2 px-4 text-white font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+            className="w-full py-2 px-4 text-black font-medium hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
           >
             sign up
           </button>
         </form>
+        <p className="text-xs text-center text-black">
+  have an account?
+  <a href="#" className="hover:underline ml-1">log in</a>
+          </p>
       </div>
     </div>
   );

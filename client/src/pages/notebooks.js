@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import NavBar from '../components/nav'; // Adjust the path based on your file structure
 
 export default function FrontPage() {
   const [notebooks, setNotebooks] = useState([]);
@@ -103,24 +104,32 @@ export default function FrontPage() {
       minute: '2-digit',
     }).format(date);
   }
+  const handleButtonClick = (type) => {
+    console.log(`${type} clicked`);
+    // Add your navigation logic here
+  };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-start px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 tracking-wide mb-6">notebooks</h1>
+      <div className="min-h-screen bg-white flex flex-col items-center justify-start px-4 py-5">
+      <NavBar onButtonClick={handleButtonClick} />
+
+
+      <div className="items-center justify-start py-2">
+      <h2 className="text-xl font-bold text-gray-800 tracking-wide text-left py-4 px-2">notebooks</h2>
 
       {/* Create Notebook Form */}
-      <form onSubmit={handleCreateNotebook} className="w-full max-w-md mb-8">
+      <form onSubmit={handleCreateNotebook} className="w-full max-w-md mb-1 px-2">
         <div className="flex items-center space-x-4">
           <input
             type="text"
             placeholder="new notebook title"
             value={newNotebookTitle}
             onChange={(e) => setNewNotebookTitle(e.target.value)}
-            className="w-full border border-gray-300 px-4 py-2 text-gray-700 font-bold shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm"
+            className="w-full border border-gray-300 px-4 py-2 text-black font-bold shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm"
           />
           <button
             type="submit"
-            className="py-2 px-4 bg-gray-800 text-white font-bold hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+            className="py-2 px-4 text-black font-bold hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
           >
             create
           </button>
@@ -130,7 +139,7 @@ export default function FrontPage() {
         {/* Message Display */}
         {message && (
         <div
-          className={`mb-4 text-center ${
+          className={`text-xs mb-1 text-center ${
             message.type === 'success' ? 'text-green-700' : 'text-red-700'
           }`}
         >
@@ -142,26 +151,33 @@ export default function FrontPage() {
       <div className="w-full max-w-md">
         {notebooks && notebooks.length > 0 ? (
           notebooks.map((notebook) => (
-            <div
+            <button
               key={notebook.id}
-              className="border-b border-gray-300 py-4 flex flex-col space-y-1"
+              className="w-full text-left border-b border-gray-300 text-gray-700 py-4 flex flex-col space-y-1 bg-white hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 p-2"
+              onClick={() => handleNotebookClick(notebook.id)}
             >
-              <h2 className="text-lg font-bold text-gray-800">{notebook.title}</h2>
-              <p className="text-sm text-gray-500">
-                last updated: {notebook.last_updated_at ? formatDate(notebook.last_updated_at) : 'not updated yet'}
-              </p>
-              <p className="text-sm text-gray-500">
-                created: {notebook.created_at ? formatDate(notebook.created_at) : 'unknown'}
-              </p>
-              {notebook.latest_content && (
-                <p className="text-sm text-gray-700">content: {notebook.latest_content}</p>
+              <h2 className="font-bold">{notebook.title}</h2>
+              {notebook.last_updated_at && (
+                <p className="text-xs">
+                  last updated: {notebook.last_updated_at ? formatDate(notebook.last_updated_at) : 'not updated yet'}
+                </p>
               )}
-            </div>
+              {notebook.latest_content && (
+                <div className="text-xs">
+                  <p>
+                    {notebook.latest_content.length > 200
+                      ? `${notebook.latest_content.slice(0, 200)}...`
+                      : notebook.latest_content}
+                  </p>
+                </div>
+              )}
+            </button>
           ))
         ) : (
           <p className="text-center text-gray-500">no notebooks found.</p>
         )}
       </div>
-    </div>
+      </div>
+      </div>
   );
 }
