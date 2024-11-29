@@ -51,18 +51,16 @@ export default function FrontPage() {
           let sortedData = []; // Always define sortedData at the top
 
           if (data && Array.isArray(data)) {
-        const sortedData = data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-
-        setNewNotebookTitle(
-          sortedData.length
-            ? "untitled #" + (sortedData.length + 1)
-            : "untitled #1"
-        );
-      } else {
-        // Handle null or invalid data case
-        setNewNotebookTitle("untitled #1");
-      }
+          const sortedData = data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+          setNewNotebookTitle(
+            sortedData.length
+              ? "untitled #" + (sortedData.length + 1)
+              : "untitled #1"
+          );
           setNotebooks(sortedData);
+      } else {
+        setNewNotebookTitle("untitled #1");
+          }
         } else {
           setMessage({ type: 'error', text: 'failed to fetch notebooks.' });
         }
@@ -145,14 +143,8 @@ export default function FrontPage() {
   };
 
   function formatDate(dateString) {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
+    const date = new Date(dateString).toLocaleString()
+    return date
   }
 
   const handleNotebookClick = async (notebook) => {
@@ -224,15 +216,17 @@ export default function FrontPage() {
       }
     
       // Fetch the latest content for the notebook
-      const getContentResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/content/by_session/${session.id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+
+        const getContentResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/content/by_session/${session.id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
   
       let latestContent = "";
       if (getContentResponse.ok) {
@@ -281,9 +275,7 @@ export default function FrontPage() {
       ws = new WebSocket(wsURL);
   
       ws.onopen = () => {
-        console.log("WebSocket connection opened.");
         ws.send(JSON.stringify(data));
-        console.log("Data sent:", data);
       };
   
       ws.onerror = (event) => {
@@ -291,6 +283,7 @@ export default function FrontPage() {
       };
   
       ws.onclose = (event) => {
+        ws.send(JSON.stringify({ "type": "end"}));
         console.log("WebSocket connection closed:", event.reason || "No reason provided.");
         ws = null;
       };
@@ -300,7 +293,6 @@ export default function FrontPage() {
   };
 
   const sendMessageToWebSocket = (data) => {
-    console.log(ws);  
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(data));
     } else {
@@ -373,9 +365,6 @@ export default function FrontPage() {
       console.error("An error occurred while ending the session:", error);
     } finally {
       setSelectedNotebook(null);
-      if (ws) {
-        sendMessageToWebSocket({'type':'end'});
-      }
       setSessionId(null);
     }
   };
@@ -418,16 +407,21 @@ export default function FrontPage() {
       )}
 
       {/* List of Notebooks */}
-      <div className="w-full max-w-md">
-        {notebooks && notebooks.length > 0 ? (
-          notebooks.map((notebook) => (
+        <div className="w-full max-w-md">
+      
+          {notebooks && notebooks.length > 0 ? (
+            notebooks.map((notebook) => (
             <button
               key={notebook.id}
               className="w-full text-left border-b border-gray-300 text-black py-5 flex flex-col space-y-1 bg-white hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 py-2"
               onClick={() => handleNotebookClick(notebook)}
             >
               <h2 className="font-bold text-sm">{notebook.title}</h2>
-             
+              {notebook.updated_at && (
+                <p className="text-xs text-gray-500 py-1">
+                  {notebook.updated_at ? formatDate(notebook.updated_at) : 'not updated yet'}
+                </p>
+              )}    
               
               {notebook.latest_content && (
                 <div className="text-sm">
@@ -439,11 +433,7 @@ export default function FrontPage() {
                 </div>
               )}
 
-{notebook.updated_at && (
-                <p className="text-xs text-gray-500 py-1">
-                  updated: {notebook.updated_at ? formatDate(notebook.updated_at) : 'not updated yet'}
-                </p>
-              )}    
+
             </button>
           ))
         ) : (
@@ -453,47 +443,53 @@ export default function FrontPage() {
       </div>
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-            <h2 className="text-xl font-bold text-black mb-5">{selectedNotebook.title}</h2>
-            <textarea
-              value={textBoxContent}
-              onChange={(e) => {
-                const content = e.target.value;
-                setTextBoxContent(content);   
-                sendMessageToWebSocket({'type':'send', 'content': content});
-              }}
-              placeholder="start writing..."
-              className="w-full h-32 border border-transparent text-black focus:border-white active:border-white"
-            />
-            <div className="flex justify-between">
-              <button
-                onClick={discardModal}
-                className="px-4 py-2 bg-gray-300 text-black bg-transparent hover:text-white hover:bg-black font-medium"
-              >
-                discard
-              </button>
-              <button
-                onClick={handleSaveContent}
-                className="px-4 py-2 bg-gray-300 text-black bg-transparent hover:text-white hover:bg-blue-900 font-medium"
-              >
-                save & close
-              </button>
-            </div>
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-xl font-bold text-black">{selectedNotebook.title}</h2>
+        <div className="flex items-center">
+          <div className="w-2 h-2 mb-4 bg-red-600 rounded-full animate-pulse mr-1"></div>
+          <span className="text-sm mb-4 font-bold text-red-600">LIVE</span>
+        </div>
+      </div>
+      <textarea
+        value={textBoxContent}
+        onChange={(e) => {
+          const content = e.target.value;
+          setTextBoxContent(content);
+          sendMessageToWebSocket({ type: "send", content });
+        }}
+        placeholder="start writing..."
+        className="w-full h-32 border border-transparent text-black focus:border-white active:border-white"
+      />
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={discardModal}
+          className="px-4 py-2 bg-gray-300 text-black bg-transparent hover:text-white hover:bg-black font-medium"
+        >
+          discard
+        </button>
+        <button
+          onClick={handleSaveContent}
+          className="px-4 py-2 bg-gray-300 text-black bg-transparent hover:text-white hover:bg-blue-900 font-medium"
+        >
+          save & close
+        </button>
+      </div>
 
-            {/* Message Display */}
-                {message && (
-                <div
-                  className={`text-xs my-3 text-center ${
-                    message.type === 'success' ? 'text-green-700' : 'text-red-700'
-                  }`}
-                >
-                  {message.text}
-                </div>
-            )}
-          </div>
+      {/* Message Display */}
+      {message && (
+        <div
+          className={`text-xs my-3 text-center ${
+            message.type === "success" ? "text-green-700" : "text-red-700"
+          }`}
+        >
+          {message.text}
         </div>
       )}
+    </div>
+  </div>
+)}
       </div>
   );
 }

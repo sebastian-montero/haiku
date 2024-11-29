@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ export default function Signup() {
   });
 
   const [message, setMessage] = useState(null);
+  const router = useRouter();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,7 +50,8 @@ export default function Signup() {
           localStorage.setItem('jwt', data.token);
         }
 
-        setMessage({ type: 'success', text: `user created.` });
+        setMessage({ type: 'success', text: `welcome!` });
+        router.push('/notebooks');
       } else {
         const errorData = await response.json();
         setMessage({ type: 'error', text: `error: ${errorData.message}` });
