@@ -123,11 +123,12 @@ func (s *SessionService) UpdateSession(id string, session *models.Session) error
 		return err
 	}
 
-	// Merge updated fields into the existing session
 	if session.IsActive {
 		existingSession.IsActive = session.IsActive
+		now := utils.GetStringTime()
+		existingSession.StartedAt = &now
 	}
-	if session.StartedAt != nil {
+	if session.StartedAt != nil {	
 		existingSession.StartedAt = session.StartedAt
 	}
 	if session.EndedAt != nil {

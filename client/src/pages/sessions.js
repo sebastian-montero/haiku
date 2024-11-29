@@ -29,7 +29,9 @@ export default function ActiveSessionsGrid() {
 
         if (response.ok) {
           const data = await response.json();
-          setSessions(data);
+          const sortedData = data.sort((a, b) => new Date(b.started_at) - new Date(a.started_at));
+
+        setSessions(sortedData);
         } else {
           setMessage({ type: "error", text: "Failed to fetch active sessions." });
         }
@@ -227,9 +229,15 @@ export default function ActiveSessionsGrid() {
           <span className="text-sm mb-4 font-bold text-red-600">LIVE</span>
         </div>
       </div>
-            <div className="text-black text-sm whitespace-pre-wrap break-words">
-              {webSocketData || "waiting..."}
-            </div>
+      <div className="text-black text-sm whitespace-pre-wrap break-words">    
+
+            {webSocketData || (
+              <span className="flex items-center">
+                waiting
+                <span className="dot-animation ml-1"></span>
+              </span>
+            )}
+          </div>
             <div className="flex justify-end mt-4">
               <button
                 onClick={closeModal}

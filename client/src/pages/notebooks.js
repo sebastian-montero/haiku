@@ -453,15 +453,19 @@ export default function FrontPage() {
         </div>
       </div>
       <textarea
-        value={textBoxContent}
-        onChange={(e) => {
-          const content = e.target.value;
-          setTextBoxContent(content);
-          sendMessageToWebSocket({ type: "send", content });
-        }}
-        placeholder="start writing..."
-        className="w-full h-32 border border-transparent text-black focus:border-white active:border-white"
-      />
+  value={textBoxContent}
+  onChange={(e) => {
+    const content = e.target.value;
+    setTextBoxContent(content);
+    sendMessageToWebSocket({ type: "send", content });
+    e.target.style.height = "auto"; // Reset height to calculate scrollHeight
+    const newHeight = Math.max(e.target.scrollHeight, 500); // Enforce minimum height of 500px
+    e.target.style.height = `${newHeight}px`;
+  }}
+  placeholder="start writing..."
+  style={{ height: "500px" }} // Initial height
+  className="w-full border border-transparent text-black focus:border-white active:border-white whitespace-pre-wrap break-words p-2 resize-none"
+/>
       <div className="flex justify-between mt-4">
         <button
           onClick={discardModal}
