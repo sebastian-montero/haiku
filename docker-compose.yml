@@ -28,6 +28,24 @@ services:
       - cloudbeaver_data:/opt/cloudbeaver/workspace
     depends_on:
       - postgres
+  
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "4470:8080"
+    depends_on:
+      - postgres
+    environment:
+      JWT_SECRET_KEY: haiku
+  
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "4471:3000"
 
 volumes:
   postgres_data:

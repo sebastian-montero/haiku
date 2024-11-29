@@ -9,7 +9,7 @@ run: fmt
 
 build: fmt
 	@echo ">>> Building server..."
-	go build -o bin/server cmd/server/main.go
+	GOOS=linux GOARCH=amd64 go build -o bin/server cmd/server/main.go
 
 build-docs: 
 	@echo ">>> Generating docs..."

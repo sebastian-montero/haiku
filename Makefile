@@ -15,3 +15,13 @@ docker-down:
 docker-clean:
 	@echo ">>> Cleaning up docker compose..."
 	docker compose down --volumes --remove-orphans
+
+deploy:
+	git pull
+	cd server && make build
+
+	docker compose down
+
+	docker rmi haiku-server
+	docker rmi haiku-client
+	docker compose up -d

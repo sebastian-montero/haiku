@@ -115,7 +115,6 @@ func (s *SessionService) GetSessionByNotebookId(notebookID string) (models.Sessi
 	return s.SessionRepository.GetSessionByNotebookID(notebookID)
 }
 
-
 func (s *SessionService) UpdateSession(id string, session *models.Session) error {
 	// Fetch the existing session
 	existingSession, err := s.SessionRepository.GetSessionByID(id)
@@ -128,7 +127,7 @@ func (s *SessionService) UpdateSession(id string, session *models.Session) error
 		now := utils.GetStringTime()
 		existingSession.StartedAt = &now
 	}
-	if session.StartedAt != nil {	
+	if session.StartedAt != nil {
 		existingSession.StartedAt = session.StartedAt
 	}
 	if session.EndedAt != nil {

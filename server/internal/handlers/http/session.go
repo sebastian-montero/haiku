@@ -95,7 +95,6 @@ func (h *SessionHTTPHandler) EndSessionByID(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusOK)
 }
 
-
 func (h *SessionHTTPHandler) GetSessionByNotebookId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	notebookID := vars["notebook_id"]

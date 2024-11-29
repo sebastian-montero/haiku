@@ -391,7 +391,7 @@ export default function FrontPage() {
   };
 
   return (
-    <div className="max-h bg-white flex flex-col items-center  py-5">
+    <div className="min-h-screen  bg-white flex flex-col items-center  py-5">
       <NavBar />
 
       <div className="items-center justify-center py-2 w-1/3 px-4 min-w-[500px]">

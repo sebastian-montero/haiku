@@ -51,7 +51,6 @@ func main() {
 	api.HandleFunc("/sessions/{id}/end", sessionHTTPHandler.EndSessionByID).Methods("PUT")
 	api.HandleFunc("/sessions/{id}", sessionHTTPHandler.UpdateSession).Methods("PUT")
 
-
 	api.HandleFunc("/content", contentHandler.CreateContent).Methods("POST")
 	api.HandleFunc("/content/by_session/{session_id}", contentHandler.GetLatestContentBySessionId).Methods("GET")
 

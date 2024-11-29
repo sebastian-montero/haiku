@@ -15,20 +15,20 @@ type UserService struct {
 }
 
 func (s *UserService) CreateUser(user *models.User) error {
-    salt := make([]byte, 16)
-    if _, err := rand.Read(salt); err != nil {
-        return errors.New("failed to generate salt")
-    }
+	salt := make([]byte, 16)
+	if _, err := rand.Read(salt); err != nil {
+		return errors.New("failed to generate salt")
+	}
 
-    hashedPassword, err := utils.HashPassword(user.Password, salt)
-    if err != nil {
-        return err
-    }
+	hashedPassword, err := utils.HashPassword(user.Password, salt)
+	if err != nil {
+		return err
+	}
 
-    user.Salt = base64.StdEncoding.EncodeToString(salt)
-    user.Password = hashedPassword
+	user.Salt = base64.StdEncoding.EncodeToString(salt)
+	user.Password = hashedPassword
 
-    return s.Repository.CreateUser(user)
+	return s.Repository.CreateUser(user)
 }
 
 func (s *UserService) GetUserByID(id string) (models.User, error) {
@@ -36,7 +36,7 @@ func (s *UserService) GetUserByID(id string) (models.User, error) {
 }
 
 func (s *UserService) GetUserByUsername(username string) (models.User, error) {
-    return s.Repository.GetUserByUsername(username)
+	return s.Repository.GetUserByUsername(username)
 }
 
 func (s *UserService) DeleteUserByID(id string) error {
