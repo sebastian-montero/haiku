@@ -24,16 +24,21 @@ export default function ActiveSessionsGrid() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (response.ok) {
           const data = await response.json();
-          const sortedData = data.sort((a, b) => new Date(b.started_at) - new Date(a.started_at));
+          const sortedData = data.sort(
+            (a, b) => new Date(b.started_at) - new Date(a.started_at),
+          );
 
-        setSessions(sortedData);
+          setSessions(sortedData);
         } else {
-          setMessage({ type: "error", text: "Failed to fetch active sessions." });
+          setMessage({
+            type: "error",
+            text: "Failed to fetch active sessions.",
+          });
         }
       } catch (error) {
         setMessage({ type: "error", text: "An unexpected error occurred." });
@@ -55,7 +60,7 @@ export default function ActiveSessionsGrid() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (response.ok) {
@@ -63,7 +68,7 @@ export default function ActiveSessionsGrid() {
           return { notebookId: session.notebook_id, notebook };
         } else {
           console.error(
-            `Failed to fetch notebook for notebook_id ${session.notebook_id}`
+            `Failed to fetch notebook for notebook_id ${session.notebook_id}`,
           );
           return { notebookId: session.notebook_id, notebook: null };
         }
@@ -132,7 +137,10 @@ export default function ActiveSessionsGrid() {
       };
     } catch (error) {
       console.error("Error during WebSocket operation:", error);
-      setMessage({ type: "error", text: "Failed to open WebSocket connection." });
+      setMessage({
+        type: "error",
+        text: "Failed to open WebSocket connection.",
+      });
       setIsConnecting(false); // Stop loading spinner
     }
   };
@@ -168,39 +176,39 @@ export default function ActiveSessionsGrid() {
             const notebook = notebooks[session.notebook_id];
             return (
               <button
-  key={session.id}
-  onClick={() =>
-    handleNotebookClick(session.notebook_id, notebook?.title)
-  }
-  className="p-4 shadow rounded bg-white hover:bg-gray-100 focus:outline-none text-left"
->
-  {notebook ? (
-    <>
-      <h2 className="text-lg font-bold text-black mb-2">
-        {notebook.title}
-      </h2>
-      <p className="text-xs text-gray-500">
-        {session.started_at
-          ? new Date(session.started_at).toLocaleString()
-          : "Unknown"}
-      </p>
-      <p
-        className="text-xs text-gray-500 mt-2 line-clamp-2"
-        style={{
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {notebook.latest_content || "No content yet."}
-      </p>
-    </>
-  ) : (
-    <p className="text-gray-500 text-sm">Loading notebook...</p>
-  )}
-</button>
+                key={session.id}
+                onClick={() =>
+                  handleNotebookClick(session.notebook_id, notebook?.title)
+                }
+                className="p-4 shadow rounded bg-white hover:bg-gray-100 focus:outline-none text-left"
+              >
+                {notebook ? (
+                  <>
+                    <h2 className="text-lg font-bold text-black mb-2">
+                      {notebook.title}
+                    </h2>
+                    <p className="text-xs text-gray-500">
+                      {session.started_at
+                        ? new Date(session.started_at).toLocaleString()
+                        : "Unknown"}
+                    </p>
+                    <p
+                      className="text-xs text-gray-500 mt-2 line-clamp-2"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {notebook.latest_content || "No content yet."}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-gray-500 text-sm">Loading notebook...</p>
+                )}
+              </button>
             );
           })}
         </div>
@@ -222,22 +230,23 @@ export default function ActiveSessionsGrid() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold text-black">{activeNotebook}</h2>
-        <div className="flex items-center">
-          <div className="w-2 h-2 mb-4 bg-red-600 rounded-full animate-pulse mr-1"></div>
-          <span className="text-sm mb-4 font-bold text-red-600">LIVE</span>
-        </div>
-      </div>
-      <div className="text-black text-sm whitespace-pre-wrap break-words">    
-
-            {webSocketData || (
-              <span className="flex items-center">
-                waiting
-                <span className="dot-animation ml-1"></span>
-              </span>
-            )}
-          </div>
+              <div className="flex items-center">
+                <div className="w-2 h-2 mb-4 bg-red-600 rounded-full animate-pulse mr-1"></div>
+                <span className="text-sm mb-4 font-bold text-red-600">
+                  LIVE
+                </span>
+              </div>
+            </div>
+            <div className="text-black text-sm whitespace-pre-wrap break-words">
+              {webSocketData || (
+                <span className="flex items-center">
+                  waiting
+                  <span className="dot-animation ml-1"></span>
+                </span>
+              )}
+            </div>
             <div className="flex justify-end mt-4">
               <button
                 onClick={closeModal}
@@ -249,9 +258,6 @@ export default function ActiveSessionsGrid() {
           </div>
         </div>
       )}
-
-
-      
     </div>
   );
 }

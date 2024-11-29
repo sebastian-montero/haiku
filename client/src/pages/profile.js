@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import NavBar from '../components/nav'; // Adjust the path based on your file structure
+import NavBar from "../components/nav"; // Adjust the path based on your file structure
 
 export default function Profile() {
   const [formData, setFormData] = useState({
@@ -24,7 +24,7 @@ export default function Profile() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (response.ok) {
@@ -64,7 +64,7 @@ export default function Profile() {
             username: formData.username,
             email: formData.email,
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -101,80 +101,85 @@ export default function Profile() {
       return null;
     }
   };
-    
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-start px-4 py-5">
-  <NavBar />
+      <NavBar />
 
-  <div className="w-full max-w-lg items-start py-2">
-    <h2 className="text-xl font-bold text-black tracking-wide text-left py-4">profile</h2>
+      <div className="w-full max-w-lg items-start py-2">
+        <h2 className="text-xl font-bold text-black tracking-wide text-left py-4">
+          profile
+        </h2>
 
-    {/* Update Profile Form */}
-    <form onSubmit={handleSubmit} className="w-full space-y-4">
-      <div>
-        <label
-          htmlFor="username"
-          className="block text-sm font-bold text-black"
-        >
-          username
-        </label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-black focus:border-black sm:text-sm text-black"
-        />
-      </div>
+        {/* Update Profile Form */}
+        <form onSubmit={handleSubmit} className="w-full space-y-4">
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-bold text-black"
+            >
+              username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-black focus:border-black sm:text-sm text-black"
+            />
+          </div>
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-bold text-black">
-          email
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-black focus:border-black sm:text-sm text-black"
-        />
-      </div>
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-bold text-black"
+            >
+              email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-black focus:border-black sm:text-sm text-black"
+            />
+          </div>
 
-      {/* Message Display */}
-      {message && (
-        <div
-          className={`mb-4 text-xs text-center ${
-            message.type === "success" ? "text-green-700" : "text-red-700"
-          }`}
-        >
-          {message.text}
+          {/* Message Display */}
+          {message && (
+            <div
+              className={`mb-4 text-xs text-center ${
+                message.type === "success" ? "text-green-700" : "text-red-700"
+              }`}
+            >
+              {message.text}
+            </div>
+          )}
+
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="mt-2 w-1/2 max-w-sm py-2 px-4 text-sm bg-white text-black font-medium hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+            >
+              update profile
+            </button>
+          </div>
+        </form>
+
+        {/* Sign-Out Button */}
+        <div className="flex justify-center">
+          <button
+            onClick={handleSignOut}
+            className="mt-2 w-1/2 max-w-sm py-2 px-4 text-sm bg-white text-black font-medium hover:bg-red-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600"
+          >
+            sign out
+          </button>
         </div>
-      )}
-
-      <div className="flex justify-center">
-        <button
-          type="submit"
-          className="mt-2 w-1/2 max-w-sm py-2 px-4 text-sm bg-white text-black font-medium hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
-        >
-          update profile
-        </button>
       </div>
-    </form>
-
-    {/* Sign-Out Button */}
-    <div className="flex justify-center">
-      <button
-        onClick={handleSignOut}
-        className="mt-2 w-1/2 max-w-sm py-2 px-4 text-sm bg-white text-black font-medium hover:bg-red-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600"
-      >
-        sign out
-      </button>
     </div>
-  </div>
-</div>
   );
 }

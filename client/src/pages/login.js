@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Login() {
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
+    username: "",
+    password: "",
   });
 
   const [message, setMessage] = useState(null);
@@ -22,39 +22,46 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: formData.username,
+            password: formData.password,
+          }),
         },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }),
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();
 
         if (data.token) {
-          localStorage.setItem('jwt', data.token);
+          localStorage.setItem("jwt", data.token);
         }
-        setMessage({ type: 'success', text: 'login successful.' });
-        router.push('/notebooks');
+        setMessage({ type: "success", text: "login successful." });
+        router.push("/notebooks");
       } else {
         const errorData = await response.json();
-        setMessage({ type: 'error', text: `error: ${errorData.message}` });
+        setMessage({ type: "error", text: `error: ${errorData.message}` });
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'an unexpected error occurred.' });
+      setMessage({ type: "error", text: "an unexpected error occurred." });
     }
   };
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-6">
-        <h1 className="text-3xl font-bold text-black tracking-wide text-center">haiku⿻</h1>
-        <h2 className="text-xl font-bold text-black tracking-wide text-center">log in</h2>
+        <h1 className="text-3xl font-bold text-black tracking-wide text-center">
+          haiku⿻
+        </h1>
+        <h2 className="text-xl font-bold text-black tracking-wide text-center">
+          log in
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -96,9 +103,9 @@ export default function Login() {
           {message && (
             <div
               className={`p-4 text-sm ${
-                message.type === 'success'
-                  ? 'text-green-700 text-center'
-                  : 'text-red-700 text-center'
+                message.type === "success"
+                  ? "text-green-700 text-center"
+                  : "text-red-700 text-center"
               }`}
             >
               {message.text}
@@ -111,12 +118,13 @@ export default function Login() {
           >
             log in
           </button>
-          
         </form>
         <p className="text-xs text-center text-black">
-  don't have an account?
-  <a href="/signup" className="hover:underline ml-1">sign up</a>
-          </p>
+          don't have an account?
+          <a href="/signup" className="hover:underline ml-1">
+            sign up
+          </a>
+        </p>
       </div>
     </div>
   );
