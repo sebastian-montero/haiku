@@ -107,14 +107,14 @@ export default function Profile() {
   <NavBar />
 
   <div className="w-full max-w-lg items-start py-2">
-    <h2 className="text-xl font-bold text-gray-800 tracking-wide text-left py-4">profile</h2>
+    <h2 className="text-xl font-bold text-black tracking-wide text-left py-4">profile</h2>
 
     {/* Update Profile Form */}
     <form onSubmit={handleSubmit} className="w-full space-y-4">
       <div>
         <label
           htmlFor="username"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-bold text-black"
         >
           username
         </label>
@@ -125,12 +125,12 @@ export default function Profile() {
           value={formData.username}
           onChange={handleChange}
           required
-          className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-black"
+          className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-black focus:border-black sm:text-sm text-black"
         />
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="email" className="block text-sm font-bold text-black">
           email
         </label>
         <input
@@ -140,7 +140,7 @@ export default function Profile() {
           value={formData.email}
           onChange={handleChange}
           required
-          className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-black"
+          className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-black focus:border-black sm:text-sm text-black"
         />
       </div>
 
@@ -158,7 +158,7 @@ export default function Profile() {
       <div className="flex justify-center">
         <button
           type="submit"
-          className="mt-2 w-1/2 max-w-sm py-2 px-4 text-sm bg-white text-black font-medium hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+          className="mt-2 w-1/2 max-w-sm py-2 px-4 text-sm bg-white text-black font-medium hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
         >
           update profile
         </button>

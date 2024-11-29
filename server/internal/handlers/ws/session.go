@@ -120,10 +120,6 @@ func (h *WebSocketHandler) handleWrite(conn *websocket.Conn, notebookID, ownerID
 			if err != nil {
 				logger.Error(fmt.Sprintf("Failed to end session: %v", err))
 			}
-			err = h.Service.CreateContent(strconv.Itoa(notebookID), h.SessionContent[notebookID])
-			if err != nil {
-				logger.Error(fmt.Sprintf("Failed to create notebook content: %v", err))
-			}
 			err = h.Service.UpdateNotebookContent(strconv.Itoa(notebookID), h.SessionContent[notebookID])
 			if err != nil {
 				logger.Error(fmt.Sprintf("Failed to update notebook content: %v", err))

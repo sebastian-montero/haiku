@@ -14,6 +14,7 @@ export default function FrontPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [webSocket, setWebSocket] = useState(null);
   const [textBoxContent, setTextBoxContent] = useState("");
+  const [selectedNotebookTitle, setSelectedNotebookTitle] = useState("");
 
   // Decode JWT and set owner_id
   useEffect(() => {
@@ -47,11 +48,26 @@ export default function FrontPage() {
         );
         if (response.ok) {
           const data = await response.json();
-          setNotebooks(data);
+          let sortedData = []; // Always define sortedData at the top
+
+          if (data && Array.isArray(data)) {
+        const sortedData = data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+        setNewNotebookTitle(
+          sortedData.length
+            ? "untitled #" + (sortedData.length + 1)
+            : "untitled #1"
+        );
+      } else {
+        // Handle null or invalid data case
+        setNewNotebookTitle("untitled #1");
+      }
+          setNotebooks(sortedData);
         } else {
           setMessage({ type: 'error', text: 'failed to fetch notebooks.' });
         }
       } catch (error) {
+        console.error('An error occurred while fetching notebooks:', error);
         setMessage({ type: 'error', text: 'an unexpected error occurred.' });
       }
     }
@@ -139,13 +155,13 @@ export default function FrontPage() {
     }).format(date);
   }
 
-  const handleNotebookClick = async (notebookId) => {
+  const handleNotebookClick = async (notebook) => {
     try {
       const token = localStorage.getItem("jwt");
   
       // First, try to fetch the session by notebook ID
       const getSessionResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/sessions/by_notebook/${notebookId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/sessions/by_notebook/${notebook.id}`,
         {
           method: "GET",
           headers: {
@@ -169,7 +185,7 @@ export default function FrontPage() {
             },
             body: JSON.stringify({
               owner_id: ownerId,
-              notebook_id: notebookId,
+              notebook_id: notebook.id,
             }),
           }
         );
@@ -228,7 +244,7 @@ export default function FrontPage() {
 
       try {
         const data = { message: "Notebook opened", timestamp: new Date() };   
-        await openWebSocketConnection(notebookId, ownerId, data);
+        await openWebSocketConnection(notebook.id, ownerId, data);
       } catch (error) {
         console.error("Error handling notebook click:", error);
         setMessage({ type: "error", text: "Failed to process notebook click." });
@@ -236,9 +252,10 @@ export default function FrontPage() {
   
       // Set session state and open the modal with content
       setSessionId(session.id);
-      setSelectedNotebook(notebookId);
+      setSelectedNotebook(notebook);
       setTextBoxContent(latestContent); // Display latest content in the modal's text box
       setModalOpen(true);
+      setMessage("");
 
     } catch (error) {
       setMessage({ type: "error", text: "An unexpected error occurred." });
@@ -320,9 +337,11 @@ export default function FrontPage() {
       console.error("An error occurred while saving content:", error);
       setMessage({ type: "error", text: "An unexpected error occurred." });
     }
+
+    discardModal();
   };
 
-  const closeModal = async () => {
+  const discardModal = async () => {
     try {
       const token = localStorage.getItem("jwt");
       if (!sessionId) {
@@ -362,26 +381,25 @@ export default function FrontPage() {
   };
 
   return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-start px-4 py-5">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-start py-5">
       <NavBar />
 
-
       <div className="items-center justify-start py-2">
-      <h2 className="text-xl font-bold text-gray-800 tracking-wide text-left py-4 px-2">notebooks</h2>
+      <h2 className="text-xl font-bold text-black tracking-wide text-left py-4">notebooks</h2>
 
       {/* Create Notebook Form */}
-      <form onSubmit={handleCreateNotebook} className="w-full max-w-md mb-1 px-2">
+      <form onSubmit={handleCreateNotebook} className="w-full max-w-md mb-5">
         <div className="flex items-center space-x-4">
           <input
             type="text"
-            placeholder="new notebook title"
+            placeholder="title"
             value={newNotebookTitle}
             onChange={(e) => setNewNotebookTitle(e.target.value)}
-            className="w-full border border-gray-300 px-4 py-2 text-black font-bold shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm"
+            className="w-full border border-gray-300 px-4 py-2 text-gray-500 font-bold focus:ring-black focus:border-black sm:text-sm"
           />
           <button
             type="submit"
-            className="py-2 px-4 text-black font-bold hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+            className="text-sm py-2 px-4 text-black font-bold hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
           >
             create
           </button>
@@ -405,17 +423,14 @@ export default function FrontPage() {
           notebooks.map((notebook) => (
             <button
               key={notebook.id}
-              className="w-full text-left border-b border-gray-300 text-gray-700 py-4 flex flex-col space-y-1 bg-white hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 p-2"
-              onClick={() => handleNotebookClick(notebook.id)}
+              className="w-full text-left border-b border-gray-300 text-black py-5 flex flex-col space-y-1 bg-white hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 py-2"
+              onClick={() => handleNotebookClick(notebook)}
             >
-              <h2 className="font-bold">{notebook.title}</h2>
-              {notebook.last_updated_at && (
-                <p className="text-xs">
-                  last updated: {notebook.last_updated_at ? formatDate(notebook.last_updated_at) : 'not updated yet'}
-                </p>
-              )}
+              <h2 className="font-bold text-sm">{notebook.title}</h2>
+             
+              
               {notebook.latest_content && (
-                <div className="text-xs">
+                <div className="text-sm">
                   <p>
                     {notebook.latest_content.length > 200
                       ? `${notebook.latest_content.slice(0, 200)}...`
@@ -423,18 +438,24 @@ export default function FrontPage() {
                   </p>
                 </div>
               )}
+
+{notebook.updated_at && (
+                <p className="text-xs text-gray-500 py-1">
+                  updated: {notebook.updated_at ? formatDate(notebook.updated_at) : 'not updated yet'}
+                </p>
+              )}    
             </button>
           ))
         ) : (
-          <p className="my-10 text-center text-gray-500 text-xs">no notebooks found.</p>
+          <p className="my-10 text-center text-gray-500 text-xs">get started by creating a new notebook</p>
         )}
       </div>
       </div>
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4 text-black">streaming</h2>
+            <h2 className="text-xl font-bold text-black mb-5">{selectedNotebook.title}</h2>
             <textarea
               value={textBoxContent}
               onChange={(e) => {
@@ -443,22 +464,23 @@ export default function FrontPage() {
                 sendMessageToWebSocket({'type':'send', 'content': content});
               }}
               placeholder="start writing..."
-              className="w-full h-32 border border-gray-300 p-2 mb-4 text-black"
+              className="w-full h-32 border border-transparent text-black focus:border-white active:border-white"
             />
             <div className="flex justify-between">
               <button
-                onClick={closeModal}
+                onClick={discardModal}
                 className="px-4 py-2 bg-gray-300 text-black bg-transparent hover:text-white hover:bg-black font-medium"
               >
-                close
+                discard
               </button>
               <button
                 onClick={handleSaveContent}
                 className="px-4 py-2 bg-gray-300 text-black bg-transparent hover:text-white hover:bg-blue-900 font-medium"
               >
-                save
+                save & close
               </button>
             </div>
+
             {/* Message Display */}
                 {message && (
                 <div
@@ -468,7 +490,7 @@ export default function FrontPage() {
                 >
                   {message.text}
                 </div>
-              )}
+            )}
           </div>
         </div>
       )}

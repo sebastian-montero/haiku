@@ -40,12 +40,12 @@ const WebSocketReader = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-start px-4 py-5">
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">Notebook Reader</h1>
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Messages from Notebook {notebookId}</h2>
+      <h1 className="text-3xl font-bold text-black mb-4">Notebook Reader</h1>
+      <h2 className="text-xl font-bold text-black mb-4">Messages from Notebook {notebookId}</h2>
       <div className="w-full max-w-2xl border border-gray-300 rounded p-4 bg-gray-50">
         {messages.length > 0 ? (
           messages.map((message, index) => (
-            <p key={index} className="text-sm text-gray-800 mb-2">
+            <p key={index} className="text-sm text-black mb-2">
               {message}
             </p>
           ))

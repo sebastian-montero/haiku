@@ -61,14 +61,14 @@ export default function Signup() {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-6">
-        <h1 className="text-3xl font-bold text-gray-800 tracking-wide text-center">haiku⿻</h1>
-        <h2 className="text-xl font-bold text-gray-800 tracking-wide text-center">sign up</h2>
+        <h1 className="text-3xl font-bold text-black tracking-wide text-center">haiku⿻</h1>
+        <h2 className="text-xl font-bold text-black tracking-wide text-center">sign up</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-black"
             >
               username
             </label>
@@ -79,14 +79,14 @@ export default function Signup() {
               value={formData.username}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700"
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-black focus:border-black sm:text-sm text-black"
             />
           </div>
 
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-black"
             >
               email
             </label>
@@ -97,14 +97,14 @@ export default function Signup() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700"
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-black focus:border-black sm:text-sm text-black"
             />
           </div>
 
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-black"
             >
               password
             </label>
@@ -115,14 +115,14 @@ export default function Signup() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700"
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-black focus:border-black sm:text-sm text-black"
             />
           </div>
 
           <div>
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-black"
             >
               re-enter password
             </label>
@@ -133,7 +133,7 @@ export default function Signup() {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-gray-800 focus:border-gray-800 sm:text-sm text-gray-700"
+              className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-black focus:border-black sm:text-sm text-black"
             />
           </div>
           
@@ -151,7 +151,7 @@ export default function Signup() {
 
           <button
             type="submit"
-            className="w-full py-2 px-4 text-black font-medium hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+            className="w-full py-2 px-4 text-black font-medium hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
           >
             sign up
           </button>
