@@ -45,9 +45,12 @@ func main() {
 
 	api.HandleFunc("/sessions", sessionHTTPHandler.CreateSession).Methods("POST")
 	api.HandleFunc("/sessions", sessionHTTPHandler.GetActiveSessions).Methods("GET")
+	api.HandleFunc("/sessions/by_notebook/{notebook_id}", sessionHTTPHandler.GetSessionByNotebookId).Methods("GET")
 	api.HandleFunc("/sessions/{id}", sessionHTTPHandler.GetSessionByID).Methods("GET")
 	api.HandleFunc("/sessions/{id}", sessionHTTPHandler.DeleteSessionByID).Methods("DELETE")
 	api.HandleFunc("/sessions/{id}/end", sessionHTTPHandler.EndSessionByID).Methods("PUT")
+	api.HandleFunc("/sessions/{id}", sessionHTTPHandler.UpdateSession).Methods("PUT")
+
 
 	api.HandleFunc("/content", contentHandler.CreateContent).Methods("POST")
 	api.HandleFunc("/content/by_session/{session_id}", contentHandler.GetLatestContentBySessionId).Methods("GET")

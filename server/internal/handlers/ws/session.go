@@ -30,7 +30,7 @@ var upgrader = websocket.Upgrader{
 func (h *WebSocketHandler) WebSocketEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	notebookIDStr := vars["notebook_id"]
-	connType := vars["notebook_id"]
+	connType := vars["conn_type"]
 	ownerIDStr := r.URL.Query().Get("owner_id")
 
 	notebookID, _ := strconv.Atoi(notebookIDStr)
@@ -48,7 +48,7 @@ func (h *WebSocketHandler) WebSocketEndpoint(w http.ResponseWriter, r *http.Requ
 		h.Clients[notebookID] = make(map[*websocket.Conn]bool)
 	}
 	h.Clients[notebookID][conn] = true
-	logger.Info(fmt.Sprintf("New connection created for notebook %d (Owner ID: %d). Total connections: %d", notebookID, ownerID, len(h.Clients[notebookID])))
+	logger.Info(fmt.Sprintf("New connection created for notebook %d (Owner ID: %d, ConnType: %s). Total connections: %d", notebookID, ownerID, connType, len(h.Clients[notebookID])))
 	h.Mutex.Unlock()
 
 	if connType == "read" {
@@ -120,7 +120,7 @@ func (h *WebSocketHandler) handleWrite(conn *websocket.Conn, notebookID, ownerID
 			if err != nil {
 				logger.Error(fmt.Sprintf("Failed to end session: %v", err))
 			}
-			err = h.Service.CreateContent(notebookID, h.SessionContent[notebookID])
+			err = h.Service.CreateContent(strconv.Itoa(notebookID), h.SessionContent[notebookID])
 			if err != nil {
 				logger.Error(fmt.Sprintf("Failed to create notebook content: %v", err))
 			}

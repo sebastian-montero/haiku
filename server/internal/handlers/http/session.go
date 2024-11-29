@@ -94,3 +94,41 @@ func (h *SessionHTTPHandler) EndSessionByID(w http.ResponseWriter, r *http.Reque
 
 	w.WriteHeader(http.StatusOK)
 }
+
+
+func (h *SessionHTTPHandler) GetSessionByNotebookId(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	notebookID := vars["notebook_id"]
+
+	session, err := h.Service.GetSessionByNotebookId(notebookID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to get session: %v", err))
+		http.Error(w, "Failed to get session", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(session)
+}
+
+func (h *SessionHTTPHandler) UpdateSession(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var session models.Session
+
+	if err := json.NewDecoder(r.Body).Decode(&session); err != nil {
+		logger.Error(fmt.Sprintf("Failed to decode request body: %v", err))
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.Service.UpdateSession(id, &session); err != nil {
+		logger.Error(fmt.Sprintf("Failed to update session: %v", err))
+		http.Error(w, "Failed to update session", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(session)
+}

@@ -13,7 +13,6 @@ type SessionRepository struct {
 func (repo *SessionRepository) CreateSession(session *models.Session) error {
 	now := utils.GetStringTime()
 	session.StartedAt = &now
-	session.IsActive = true
 
 	query := `INSERT INTO sessions (notebook_id, owner_id, is_active, started_at) VALUES ($1, $2, $3, $4) RETURNING id`
 	err := repo.DB.QueryRow(query, session.NotebookID, session.OwnerID, session.IsActive, session.StartedAt).Scan(&session.ID)
@@ -72,10 +71,10 @@ func (repo *SessionRepository) SessionExistsByNotebookID(notebookID string) (mod
 	return session, true
 }
 
-func (repo *SessionRepository) GetSessionByNotebookID(notebookID int) (int, error) {
+func (repo *SessionRepository) GetSessionByNotebookID(notebookID string) (models.Session, error) {
 	query := `SELECT * FROM sessions WHERE notebook_id = $1`
 
 	var session models.Session
 	err := repo.DB.QueryRow(query, notebookID).Scan(&session.ID, &session.NotebookID, &session.OwnerID, &session.IsActive, &session.StartedAt, &session.EndedAt)
-	return session.ID, err
+	return session, err
 }

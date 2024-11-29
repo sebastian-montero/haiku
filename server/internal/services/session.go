@@ -98,15 +98,42 @@ func (s *SessionService) UpdateNotebookContent(notebookID string, content string
 
 }
 
-func (s *SessionService) CreateContent(notebookID int, msg string) error {
-	sessionID, err := s.SessionRepository.GetSessionByNotebookID(notebookID)
+func (s *SessionService) CreateContent(notebookID string, msg string) error {
+	session, err := s.SessionRepository.GetSessionByNotebookID(notebookID)
 	if err != nil {
 		return err
 	}
 
 	content := models.Content{
-		SessionID: sessionID,
+		SessionID: session.ID,
 		Content:   msg,
 	}
 	return s.ContentRepository.CreateContent(&content)
+}
+
+func (s *SessionService) GetSessionByNotebookId(notebookID string) (models.Session, error) {
+	return s.SessionRepository.GetSessionByNotebookID(notebookID)
+}
+
+
+func (s *SessionService) UpdateSession(id string, session *models.Session) error {
+	// Fetch the existing session
+	existingSession, err := s.SessionRepository.GetSessionByID(id)
+	if err != nil {
+		return err
+	}
+
+	// Merge updated fields into the existing session
+	if session.IsActive {
+		existingSession.IsActive = session.IsActive
+	}
+	if session.StartedAt != nil {
+		existingSession.StartedAt = session.StartedAt
+	}
+	if session.EndedAt != nil {
+		existingSession.EndedAt = session.EndedAt
+	}
+
+	// Update the session in the repository
+	return s.SessionRepository.UpdateSession(&existingSession)
 }
