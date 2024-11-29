@@ -10,7 +10,7 @@ export default function NavBar() {
 
   return (
     <div className="flex flex-col items-center justify-start mb-3">
-      <h1 className="text-3xl font-bold text-black tracking-wide">haiku</h1>
+      <h1 className="text-3xl font-bold text-black tracking-wide">haiku⿻</h1>
 
       <div className="flex space-x-10 justify-center mb-5">
         <button

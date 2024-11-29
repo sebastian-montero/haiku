@@ -370,14 +370,18 @@ export default function FrontPage() {
   };
 
   return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-start py-5">
+    <div className="max-h bg-white flex flex-col items-center  py-5">
       <NavBar />
 
-      <div className="items-center justify-start py-2">
-      <h2 className="text-xl font-bold text-black tracking-wide text-left py-4">notebooks</h2>
+      <div className="items-center justify-center py-2 w-1/3 px-4 min-w-[500px]">
+        <h2 className="text-xl font-bold text-black tracking-wide text-left py-4">notebooks</h2>
+
+        
+        <div className=" flex flex-col items-center justify-center w-full"> 
+
 
       {/* Create Notebook Form */}
-      <form onSubmit={handleCreateNotebook} className="w-full max-w-md mb-5">
+      <form onSubmit={handleCreateNotebook} className="w-full mb-5">
         <div className="flex items-center space-x-4">
           <input
             type="text"
@@ -407,7 +411,7 @@ export default function FrontPage() {
       )}
 
       {/* List of Notebooks */}
-        <div className="w-full max-w-md">
+        <div className="w-full">
       
           {notebooks && notebooks.length > 0 ? (
             notebooks.map((notebook) => (
@@ -492,8 +496,10 @@ export default function FrontPage() {
         </div>
       )}
     </div>
-  </div>
+          </div>
+          
 )}
+      </div>
       </div>
   );
 }
