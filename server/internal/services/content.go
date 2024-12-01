@@ -38,7 +38,6 @@ func (s *ContentService) GetLatestContentBySessionId(sessionId string) (*models.
 	return s.ContentRepository.GetLatestContentBySessionId(sessionId)
 }
 
-
 func (s *ContentService) DeleteContentBySessionID(sessionId string) error {
 	return s.ContentRepository.DeleteContentBySessionID(sessionId)
 }

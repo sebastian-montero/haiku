@@ -7,7 +7,7 @@ import (
 )
 
 type NotebookService struct {
-	Repository *repositories.NotebookRepository
+	Repository        *repositories.NotebookRepository
 	SessionRepository *repositories.SessionRepository
 	ContentRepository *repositories.ContentRepository
 }

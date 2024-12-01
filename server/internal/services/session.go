@@ -129,8 +129,7 @@ func (s *SessionService) UpdateSession(id string, session *models.Session) error
 	} else {
 		existingSession.IsActive = session.IsActive
 		existingSession.EndedAt = session.EndedAt
-	}	
-
+	}
 
 	if session.StartedAt != nil {
 		existingSession.StartedAt = session.StartedAt
@@ -138,7 +137,7 @@ func (s *SessionService) UpdateSession(id string, session *models.Session) error
 	if session.EndedAt != nil {
 		existingSession.EndedAt = session.EndedAt
 	}
-	
+
 	// Update the session in the repository
 	return s.SessionRepository.UpdateSession(&existingSession)
 }

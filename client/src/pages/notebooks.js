@@ -529,8 +529,8 @@ export default function FrontPage() {
       });
   };
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center py-5">
-      <NavBar />
+<div className="min-h-screen bg-white flex flex-col items-center py-5 px-4">
+<NavBar />
 
       <div className="flex flex-col items-center justify-center py-2 w-full px-4 sm:w-2/3 md:w-1/2 lg:w-1/3">
         <h2 className="text-xl font-bold text-black tracking-wide text-left py-4">
@@ -569,53 +569,53 @@ export default function FrontPage() {
           )}
 
           {/* List of Notebooks */}
-<div className="w-full">
+          <div className="w-full">
   {notebooks && notebooks.length > 0 ? (
     notebooks.map((notebook) => (
       <div
         key={notebook.id}
-        className="w-full text-left border-b border-gray-300 text-black py-5 flex flex-row justify-between items-center bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300"
+        className="w-full text-left border-b border-gray-300 text-black py-4 flex flex-row justify-between items-start bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300"
       >
         {/* Notebook Info */}
         <button
-          className="flex flex-col space-y-1 w-full text-left"
+          className="flex flex-col space-y-1 w-full pr-4"
           onClick={() => handleNotebookClick(notebook)}
         >
           <h2 className="font-bold text-sm">{notebook.title}</h2>
           {notebook.updated_at && (
-            <p className="text-xs text-gray-500 py-1">
-              {notebook.updated_at
-                ? formatDate(notebook.updated_at)
-                : "not updated yet"}
+            <p className="text-xs text-gray-500">
+              {formatDate(notebook.updated_at)}
             </p>
           )}
           {notebook.latest_content && (
-            <div className="text-sm">
-              <p>
-                {notebook.latest_content.length > 200
-                  ? `${notebook.latest_content.slice(0, 200)}...`
-                  : notebook.latest_content}
-              </p>
-            </div>
-          )}
+          <div className="text-sm text-gray-700 mt-1 max-w-full overflow-hidden text-ellipsis text-left">
+            <p>
+              {notebook.latest_content.length > 100
+                ? `${notebook.latest_content.slice(0, 100)}...`
+                : notebook.latest_content}
+            </p>
+          </div>
+        )}
         </button>
 
         {/* Delete Button */}
-        <button
-          className="text-black hover:text-red-700 px-7 focus:outline-none"
-          onClick={() => handleDeleteNotebook(notebook.id)}
-          aria-label={`Delete notebook ${notebook.title}`}
-        >
-          <FaTrash size={16} />
-        </button>
+        <div className="flex justify-center items-center h-10 mx-5">
+  <button
+    className="text-black hover:text-red-700 focus:outline-none"
+    onClick={() => handleDeleteNotebook(notebook.id)}
+    aria-label={`Delete notebook ${notebook.title}`}
+  >
+    <FaTrash size={20} />
+  </button>
+</div>
       </div>
     ))
   ) : (
     <p className="my-10 text-center text-gray-500 text-xs">
-      get started by creating a new notebook
+      Get started by creating a new notebook
     </p>
   )}
-          </div>
+</div>
           </div>
 
         
