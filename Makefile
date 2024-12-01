@@ -17,6 +17,7 @@ docker-clean:
 	docker compose down --volumes --remove-orphans
 
 deploy:
+	git restore server/bin/server
 	git pull
 	cd server && make build
 
