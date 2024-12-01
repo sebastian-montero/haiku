@@ -295,6 +295,7 @@ export default function FrontPage() {
       };
 
       ws.onerror = (event) => {
+        ws.send(JSON.stringify({ type: "end" }));
         console.error("WebSocket error:", event);
       };
 

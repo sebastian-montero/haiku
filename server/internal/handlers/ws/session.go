@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"haiku/internal/models"
 	"haiku/internal/services"
+	"haiku/internal/utils"
 	"haiku/internal/utils/logger"
 	"net/http"
 	"strconv"
@@ -163,14 +164,35 @@ func (h *WebSocketHandler) removeClient(conn *websocket.Conn, notebookID int) {
 	h.Mutex.Lock()
 	defer h.Mutex.Unlock()
 
+	// Remove the client connection
 	if _, exists := h.Clients[notebookID][conn]; exists {
 		delete(h.Clients[notebookID], conn)
 		logger.Info(fmt.Sprintf("Connection removed for notebook %d. Remaining connections: %d", notebookID, len(h.Clients[notebookID])))
 	}
 
+	// If no clients remain, remove the notebook entry and set the session to inactive
 	if len(h.Clients[notebookID]) == 0 {
 		delete(h.Clients, notebookID)
 		logger.Info(fmt.Sprintf("All connections closed for notebook %d. Notebook entry removed.", notebookID))
+
+		// Fetch the session associated with the notebook
+		session, exists := h.Service.SessionExistsByNotebookID(strconv.Itoa(notebookID))
+		if !exists {
+			logger.Error(fmt.Sprintf("Failed to fetch session for notebook %d", notebookID))
+			return
+		}
+
+		// Set the session to inactive and update the session in the database
+		session.IsActive = false
+		now := utils.GetStringTime()
+		session.EndedAt = &now
+
+		err := h.Service.UpdateSession(strconv.Itoa(session.ID), &session)
+		if err != nil {
+			logger.Error(fmt.Sprintf("Failed to set session to inactive for notebook %d: %v", notebookID, err))
+			return
+		}
+		logger.Info(fmt.Sprintf("Session set to inactive for notebook %d", notebookID))
 	}
 }
 
@@ -199,18 +221,15 @@ func (h *WebSocketHandler) removeAllClientsFromNotebook(notebookID int) {
 	}
 
 	for client := range connections {
-		// Close the WebSocket connection
 		err := client.Close()
 		if err != nil {
 			logger.Error(fmt.Sprintf("Error closing connection for notebook %d: %v", notebookID, err))
 		} else {
 			logger.Info(fmt.Sprintf("Connection closed for notebook %d", notebookID))
 		}
-		// Remove the client from the notebook's map
 		delete(connections, client)
 	}
 
-	// Remove the notebook entry if there are no more connections
 	if len(connections) == 0 {
 		delete(h.Clients, notebookID)
 		logger.Info(fmt.Sprintf("All connections removed for notebook %d", notebookID))
