@@ -7,7 +7,7 @@ run: fmt
 	@echo ">>> Running server..."
 	go run cmd/server/main.go
 
-build: fmt
+build:
 	@echo ">>> Building server..."
 	GOOS=linux GOARCH=amd64 go build -o bin/server cmd/server/main.go
 
