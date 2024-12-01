@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import NavBar from "../components/nav"; // Adjust the path based on your file structure
+import { FaTrash } from "react-icons/fa";
 
 let ws = null;
 
@@ -390,11 +391,147 @@ export default function FrontPage() {
     }
   };
 
+  const handleDeleteNotebook = async (id) => {
+    try {
+      const token = localStorage.getItem("jwt");
+      if (!token) {
+        console.error("JWT token is not set.");
+        setMessage({
+          type: "error",
+          text: "You must be logged in to delete a notebook.",
+        });
+        return;
+      }
+  
+      if (!id) {
+        console.error("Notebook ID is not set.");
+        setMessage({
+          type: "error",
+          text: "Invalid notebook ID.",
+        });
+        return;
+      }
+  
+      if (confirm("Are you sure you want to delete this notebook?")) {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/notebooks/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        console.log(response);
+  
+        if (response.ok) {
+          setNotebooks((prev) => prev.filter((notebook) => notebook.id !== id));
+          setMessage({
+            type: "success",
+            text: "Notebook deleted successfully.",
+          });
+        } else {
+          const errorData = await response.json();
+          console.error("Failed to delete notebook:", errorData);
+          setMessage({
+            type: "error",
+            text: errorData.message || "Failed to delete the notebook.",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Failed to delete notebook:", error);
+      setMessage({
+        type: "error",
+        text: "An unexpected error occurred.",
+      });
+    }
+  };
+
+  const handleKeyDown = async (e, id) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const newTitle = e.target.value;
+  
+      if (!newTitle.trim()) {
+        console.error("Title cannot be empty.");
+        setMessage({
+          type: "error",
+          text: "Notebook title cannot be empty.",
+        });
+        return;
+      }
+  
+      await handleTitleChange(id, newTitle);
+    }
+  };
+
+  const handleTitleChange = (id, newTitle) => {
+    const token = localStorage.getItem("jwt");
+    if (!token) {
+      console.error("JWT token is not set.");
+      setMessage({
+        type: "error",
+        text: "You must be logged in to update the notebook title.",
+      });
+      return;
+    }
+  
+    if (!id || !newTitle.trim()) {
+      console.error("Invalid notebook ID or title.");
+      setMessage({
+        type: "error",
+        text: "Notebook ID or title cannot be empty.",
+      });
+      return;
+    }
+  
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/notebooks`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id, title: newTitle }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          setMessage({
+            type: "success",
+            text: "Notebook title updated successfully.",
+          });
+          return response.json();
+        } else {
+          return response.json().then((errorData) => {
+            console.error("Failed to update notebook title:", errorData);
+            setMessage({
+              type: "error",
+              text: errorData.message || "Failed to update the notebook title.",
+            });
+            throw new Error(errorData.message || "Failed to update the notebook title.");
+          });
+        }
+      })
+      .then((updatedNotebook) => {
+        setNotebooks((prev) =>
+          prev.map((notebook) =>
+            notebook.id === id
+              ? { ...notebook, title: updatedNotebook.title }
+              : notebook
+          )
+        );
+      })
+      .catch((error) => {
+        console.error("Failed to update notebook title:", error);
+        setMessage({
+          type: "error",
+          text: "An unexpected error occurred.",
+        });
+      });
+  };
   return (
-    <div className="min-h-screen  bg-white flex flex-col items-center  py-5">
+    <div className="min-h-screen bg-white flex flex-col items-center py-5">
       <NavBar />
 
-      <div className="items-center justify-center py-2 w-1/3 px-4 min-w-[500px]">
+      <div className="flex flex-col items-center justify-center py-2 w-full px-4 sm:w-2/3 md:w-1/2 lg:w-1/3">
         <h2 className="text-xl font-bold text-black tracking-wide text-left py-4">
           notebooks
         </h2>
@@ -431,100 +568,123 @@ export default function FrontPage() {
           )}
 
           {/* List of Notebooks */}
-          <div className="w-full">
-            {notebooks && notebooks.length > 0 ? (
-              notebooks.map((notebook) => (
-                <button
-                  key={notebook.id}
-                  className="w-full text-left border-b border-gray-300 text-black py-5 flex flex-col space-y-1 bg-white hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 py-2"
-                  onClick={() => handleNotebookClick(notebook)}
-                >
-                  <h2 className="font-bold text-sm">{notebook.title}</h2>
-                  {notebook.updated_at && (
-                    <p className="text-xs text-gray-500 py-1">
-                      {notebook.updated_at
-                        ? formatDate(notebook.updated_at)
-                        : "not updated yet"}
-                    </p>
-                  )}
-
-                  {notebook.latest_content && (
-                    <div className="text-sm">
-                      <p>
-                        {notebook.latest_content.length > 200
-                          ? `${notebook.latest_content.slice(0, 200)}...`
-                          : notebook.latest_content}
-                      </p>
-                    </div>
-                  )}
-                </button>
-              ))
-            ) : (
-              <p className="my-10 text-center text-gray-500 text-xs">
-                get started by creating a new notebook
+<div className="w-full">
+  {notebooks && notebooks.length > 0 ? (
+    notebooks.map((notebook) => (
+      <div
+        key={notebook.id}
+        className="w-full text-left border-b border-gray-300 text-black py-5 flex flex-row justify-between items-center bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300"
+      >
+        {/* Notebook Info */}
+        <button
+          className="flex flex-col space-y-1 w-full text-left"
+          onClick={() => handleNotebookClick(notebook)}
+        >
+          <h2 className="font-bold text-sm">{notebook.title}</h2>
+          {notebook.updated_at && (
+            <p className="text-xs text-gray-500 py-1">
+              {notebook.updated_at
+                ? formatDate(notebook.updated_at)
+                : "not updated yet"}
+            </p>
+          )}
+          {notebook.latest_content && (
+            <div className="text-sm">
+              <p>
+                {notebook.latest_content.length > 200
+                  ? `${notebook.latest_content.slice(0, 200)}...`
+                  : notebook.latest_content}
               </p>
-            )}
+            </div>
+          )}
+        </button>
+
+        {/* Delete Button */}
+        <button
+          className="text-black hover:text-red-700 px-7 focus:outline-none"
+          onClick={() => handleDeleteNotebook(notebook.id)}
+          aria-label={`Delete notebook ${notebook.title}`}
+        >
+          <FaTrash size={16} />
+        </button>
+      </div>
+    ))
+  ) : (
+    <p className="my-10 text-center text-gray-500 text-xs">
+      get started by creating a new notebook
+    </p>
+  )}
           </div>
-        </div>
+          </div>
+
+        
         {/* Modal */}
         {modalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl font-bold text-black">
-                  {selectedNotebook.title}
-                </h2>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 mb-4 bg-red-600 rounded-full animate-pulse mr-1"></div>
-                  <span className="text-sm mb-4 font-bold text-red-600">
-                    LIVE
-                  </span>
-                </div>
-              </div>
-              <textarea
-                value={textBoxContent}
-                onChange={(e) => {
-                  const content = e.target.value;
-                  setTextBoxContent(content);
-                  sendMessageToWebSocket({ type: "send", content });
-                  e.target.style.height = "auto"; // Reset height to calculate scrollHeight
-                  const newHeight = Math.max(e.target.scrollHeight, 500); // Enforce minimum height of 500px
-                  e.target.style.height = `${newHeight}px`;
-                }}
-                placeholder="start writing..."
-                style={{ height: "500px" }} // Initial height
-                className="w-full border border-transparent text-black focus:border-white active:border-white whitespace-pre-wrap break-words p-2 resize-none"
-              />
-              <div className="flex justify-between mt-4">
-                <button
-                  onClick={discardModal}
-                  className="px-4 py-2 bg-gray-300 text-black bg-transparent hover:text-white hover:bg-black font-medium"
-                >
-                  discard
-                </button>
-                <button
-                  onClick={handleSaveContent}
-                  className="px-4 py-2 bg-gray-300 text-black bg-transparent hover:text-white hover:bg-blue-900 font-medium"
-                >
-                  save & close
-                </button>
-              </div>
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
+      {/* Title and Live Indicator */}
+      <div className="flex items-center justify-between mb-5">
+      <input
+            type="text"
+            value={selectedNotebook.title}
+            onKeyDown={(e) => handleKeyDown(e, selectedNotebook.id)}
+            onChange={(e) =>
+              setSelectedNotebook({ ...selectedNotebook, title: e.target.value })
+            }
+            className="text-xl font-bold text-black border-b border-gray-300 focus:border-blue-500 focus:outline-none flex-grow mr-4"
+            placeholder="Edit title..."
+          />
+        <div className="flex items-center">
+          <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse mr-1"></div>
+          <span className="text-sm font-bold text-red-600">LIVE</span>
+        </div>
+      </div>
 
-              {/* Message Display */}
-              {message && (
-                <div
-                  className={`text-xs my-3 text-center ${
-                    message.type === "success"
-                      ? "text-green-700"
-                      : "text-red-700"
-                  }`}
-                >
-                  {message.text}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+      {/* Textarea for Content */}
+      <textarea
+        value={textBoxContent}
+        onChange={(e) => {
+          const content = e.target.value;
+          setTextBoxContent(content);
+          sendMessageToWebSocket({ type: "send", content });
+          e.target.style.height = "auto"; // Reset height to calculate scrollHeight
+          const newHeight = Math.max(e.target.scrollHeight, 500); // Enforce minimum height of 500px
+          e.target.style.height = `${newHeight}px`;
+        }}
+        placeholder="start writing..."
+        style={{ height: "500px" }} // Initial height
+        className="w-full border border-transparent text-black focus:border-white active:border-white whitespace-pre-wrap break-words p-2 resize-none"
+      />
+
+      {/* Buttons */}
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={discardModal}
+          className="px-4 py-2 bg-gray-300 text-black bg-transparent hover:text-white hover:bg-black font-medium"
+        >
+          discard
+        </button>
+        <button
+          onClick={() => handleSaveContent(selectedNotebook)}
+          className="px-4 py-2 bg-gray-300 text-black bg-transparent hover:text-white hover:bg-blue-900 font-medium"
+        >
+          save & close
+        </button>
+      </div>
+
+      {/* Message Display */}
+      {message && (
+        <div
+          className={`text-xs my-3 text-center ${
+            message.type === "success" ? "text-green-700" : "text-red-700"
+          }`}
+        >
+          {message.text}
+        </div>
+      )}
+    </div>
+  </div>
+)}
       </div>
     </div>
   );

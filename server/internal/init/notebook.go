@@ -15,7 +15,7 @@ func notebookRepositoryManager(db *sql.DB) *repositories.NotebookRepository {
 
 func notebookServiceManager(repository *repositories.NotebookRepository) *services.NotebookService {
 	logger.Info("Creating notebook service...")
-	return &services.NotebookService{Repository: repository}
+	return &services.NotebookService{Repository: repository, SessionRepository: sessionRepositoryManager(repository.DB), ContentRepository: contentRepositoryManager(repository.DB)}
 }
 
 func notebookHTTPHandlerManager(service *services.NotebookService) *http_handlers.NotebookHTTPHandler {

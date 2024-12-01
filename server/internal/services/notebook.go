@@ -8,6 +8,8 @@ import (
 
 type NotebookService struct {
 	Repository *repositories.NotebookRepository
+	SessionRepository *repositories.SessionRepository
+	ContentRepository *repositories.ContentRepository
 }
 
 func (s *NotebookService) CreateNotebook(notebook *models.Notebook) error {
@@ -23,10 +25,29 @@ func (s *NotebookService) GetNotebooksByOwnerId(ownerId string) ([]models.Notebo
 }
 
 func (s *NotebookService) DeleteNotebookByID(id string) error {
-	_, err := s.Repository.GetNotebookByID(id)
+	// Step 1: Retrieve the session associated with the notebook
+	session, err := s.SessionRepository.GetSessionByNotebookID(id)
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			// If no session exists, proceed with deleting the notebook
+			return s.Repository.DeleteNotebookByID(id)
+		}
+		return err
+	}
+
+	// Step 2: Delete the content associated with the session
+	err = s.ContentRepository.DeleteContentBySessionID(strconv.Itoa(session.ID))
 	if err != nil {
 		return err
 	}
+
+	// Step 3: Delete the session
+	err = s.SessionRepository.DeleteSessionByID(strconv.Itoa(session.ID))
+	if err != nil {
+		return err
+	}
+
+	// Step 4: Delete the notebook
 	return s.Repository.DeleteNotebookByID(id)
 }
 

@@ -27,3 +27,9 @@ func (repo *ContentRepository) GetLatestContentBySessionId(sessionId string) (*m
 	err := row.Scan(&content.ID, &content.SessionID, &content.Content, &content.CreatedAt)
 	return &content, err
 }
+
+func (repo *ContentRepository) DeleteContentBySessionID(sessionId string) error {
+	query := "DELETE FROM content WHERE session_id = $1"
+	_, err := repo.DB.Exec(query, sessionId)
+	return err
+}

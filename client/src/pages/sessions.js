@@ -29,11 +29,26 @@ export default function ActiveSessionsGrid() {
 
         if (response.ok) {
           const data = await response.json();
-          const sortedData = data.sort(
-            (a, b) => new Date(b.started_at) - new Date(a.started_at),
-          );
-
-          setSessions(sortedData);
+        
+          if (data && Array.isArray(data)) { // Check if data is not null and is an array
+            const sortedData = data.sort(
+              (a, b) => new Date(b.started_at) - new Date(a.started_at),
+            );
+        
+            if (sortedData.length > 0) {
+              setSessions(sortedData);
+            } else {
+              setMessage({
+                type: "info",
+                text: "No active sessions.",
+              });
+            }
+          } else {
+            setMessage({
+              type: "info",
+              text: "No active sessions.",
+            });
+          }
         } else {
           setMessage({
             type: "error",
@@ -41,6 +56,7 @@ export default function ActiveSessionsGrid() {
           });
         }
       } catch (error) {
+        console.error("Error during session fetch:", error);
         setMessage({ type: "error", text: "An unexpected error occurred." });
       }
     }

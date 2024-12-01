@@ -18,10 +18,10 @@ docker-clean:
 
 deploy:
 	git pull
-	cd server && make build
+	# cd server && make build
 
-	docker compose down
+	# docker compose down
 
-	docker rmi haiku-server
-	docker rmi haiku-client
+	# docker rmi haiku-server
+	# docker rmi haiku-client
 	docker compose up -d
