@@ -66,15 +66,19 @@ func main() {
 // It also sets up the allowed methods and headers for the server.
 func withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "https://haiku.incendia.dev")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		// Set CORS headers
+		w.Header().Set("Access-Control-Allow-Origin", "https://haiku.incendia.dev") // Match the exact origin
+		w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST, OPTIONS") // Include OPTIONS for preflight
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")    // Include necessary headers
+		w.Header().Set("Access-Control-Allow-Credentials", "true")                       // If credentials are needed
 
+		// Handle preflight (OPTIONS) requests
 		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusOK)
+			w.WriteHeader(http.StatusNoContent) // Use 204 No Content for preflight
 			return
 		}
 
+		// Pass the request to the next handler
 		next.ServeHTTP(w, r)
 	})
 }
