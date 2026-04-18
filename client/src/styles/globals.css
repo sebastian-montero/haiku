@@ -3,40 +3,99 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbf9f3;
+  --foreground: #1a1a1a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  color: var(--foreground);
   background: var(--background);
-  @apply font-sans;
+  color: var(--foreground);
+  font-family: "Iowan Old Style", "Palatino Linotype", "Palatino", "Georgia",
+    "Cambria", "Times New Roman", serif;
+  font-feature-settings: "liga", "kern";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-@keyframes dots {
-  0% {
-    content: "";
-  }
-  33% {
-    content: ".";
-  }
-  66% {
-    content: "..";
-  }
-  100% {
-    content: "...";
-  }
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }
 
-.dot-animation::after {
+.caret {
   display: inline-block;
-  content: "";
-  animation: dots 1.5s infinite steps(1, end);
+  width: 2px;
+  height: 1.05em;
+  background: #b63d2e;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  animation: blink 1.1s steps(2, start) infinite;
+}
+
+.caret-ghost {
+  background: #b63d2e;
+  opacity: 0.55;
+  animation: none;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.25);
+  }
+}
+
+.live-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 9999px;
+  background: #b63d2e;
+  animation: pulseDot 1.3s ease-in-out infinite;
+  display: inline-block;
+}
+
+.paper {
+  background: #fbf9f3;
+}
+
+.rule {
+  border-top: 1px solid #e5e0d3;
+}
+
+textarea.script {
+  background: transparent;
+  outline: none;
+  border: none;
+  resize: none;
+  width: 100%;
+  font-family: inherit;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: #1a1a1a;
+}
+
+textarea.script::placeholder {
+  color: #a59d8d;
+  font-style: italic;
+}
+
+/* Fake textarea used to render live content with an embedded caret. */
+.stage {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: #1a1a1a;
 }

@@ -1,28 +1,18 @@
-run-server-local:
-	@echo ">>> Setting up Docker..."
-	docker compose up -d
+.PHONY: server client install dev clean
 
-	@echo ">>> Installing server dependencies..."
+install:
 	cd server && go mod download
+	cd client && npm install
 
-	@echo ">>> Running server..."
-	cd server && go run cmd/server/main.go
+server:
+	cd server && go run ./cmd/server
 
-docker-down:
-	@echo ">>> Stopping docker compose..."
-	docker compose down
+client:
+	cd client && npm run dev
 
-docker-clean:
-	@echo ">>> Cleaning up docker compose..."
-	docker compose down --volumes --remove-orphans
+# Run both in parallel. Ctrl-C stops everything.
+dev:
+	@$(MAKE) -j 2 server client
 
-deploy:
-	git restore server/bin/server
-	git pull
-	cd server && make build
-
-	docker compose down
-
-	docker rmi haiku-server
-	docker rmi haiku-client
-	docker compose up -d
+clean:
+	rm -rf server/data
